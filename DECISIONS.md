@@ -44,8 +44,23 @@ Nothing is built on an assumption. If a decision is not in this file, it has not
 - Colour palette (3 full palettes) · typography (3 pairings) · animation level
 - **Header and footer visual style** — Phase 1 builds an intentionally unstyled *structural* shell only, per CLAUDE.md's rule that each component's variants are offered before it is built.
 
-### Open items blocking nothing yet
+### Technical notes from the Phase 1 build
 
-- [ ] Business email address for the holding page — marked `PLACEHOLDER` in code until supplied
-- [ ] Context7 + GitHub MCP connection by founder
-- [ ] `CLAUDE.md` rename and amendment for decision 1.6
+Not founder decisions — recorded so nobody "corrects" these back later.
+
+| Finding | Detail |
+|---|---|
+| **Tailwind is NOT via `@astrojs/tailwind`** | CLAUDE.md says "Tailwind via the official Astro integration". That integration is superseded. Astro 7 + Tailwind 4 use the **`@tailwindcss/vite`** plugin — this is what the official `astro add tailwind` command installs. Verified, not assumed. |
+| Versions installed | Astro **7.2.2**, Tailwind **4.3.3**, `@astrojs/sitemap` **3.7.3**, `@astrojs/check` **0.9.10**. TypeScript pinned to **5.x**: TypeScript 7 is published but `@astrojs/check` does not support it yet. |
+| Config is `astro.config.ts`, not `.mjs` | So it can import `SITE_URL` from `src/config/site.ts` and keep decision 1.4's "one-line domain switch" promise honest. |
+| `z` imported from `astro/zod` | Astro 7 deprecates the `z` re-export from `astro:content` (48 deprecation hints). Zod 4 also wants top-level `z.email()` / `z.url()` over `z.string().email()`. Build is now **0 errors, 0 warnings, 0 hints**. |
+| `trailingSlash: 'always'` | Matches Cloudflare Pages' default behaviour; avoids duplicate-URL SEO issues. |
+| Assumption to confirm in Phase 3 | CLAUDE.md lists `process[]` on services without specifying its shape. Built as `{ step, detail }`. Say if you want something else. |
+
+### Open items
+
+- [ ] **Business email address** — holding page currently says "Contact details coming shortly" rather than publishing a fake address. Supply it and `src/config/site.ts` turns it into a live mailto automatically.
+- [ ] **Context7 + GitHub MCP** — not yet connected by founder.
+- [ ] **Private GitHub repo** — not yet created (decision 1.2). Needed before Cloudflare Pages auto-deploy.
+- [ ] **Cloudflare Pages project** — not yet created; holding page is built and verified locally but is **not live**.
+- [ ] `CLAUDE.md` rename, and amend it for decision 1.6 (global positioning).
