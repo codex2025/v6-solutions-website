@@ -1,0 +1,47 @@
+---
+/**
+ * Phase 1 holding page.
+ *
+ * Decision 1.12 — minimal: wordmark, one line, contact. Nothing else.
+ * Decision 1.13 — business email only; no phone number published.
+ *
+ * This page is INTENTIONALLY UNSTYLED beyond neutral defaults. Palette,
+ * typography, logo and tagline are Phase 2 decisions that have not been made,
+ * and CLAUDE.md forbids applying a palette without approval. Do not "improve"
+ * the look of this page before Phase 2 sign-off.
+ *
+ * Replaced entirely by the real Home page in Phase 3.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BRAND, BRAND_MARK, ONE_LINER, CONTACT_EMAIL, HAS_CONTACT_EMAIL } from '../config/site';
+---
+
+<BaseLayout title={BRAND} description={ONE_LINER} chrome={false}>
+  <div class="mx-auto flex min-h-screen max-w-2xl flex-col justify-center px-6 py-20">
+    <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">{BRAND_MARK}</h1>
+
+    <p class="mt-6 text-lg leading-relaxed text-neutral-700 sm:text-xl">
+      {ONE_LINER}
+    </p>
+
+    <p class="mt-10 text-sm text-neutral-500">Full site in progress.</p>
+
+    <div class="mt-2">
+      {
+        HAS_CONTACT_EMAIL ? (
+          <a
+            href={`mailto:${CONTACT_EMAIL}`}
+            class="text-sm text-neutral-900 underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900"
+          >
+            {CONTACT_EMAIL}
+          </a>
+        ) : (
+          /* Honest placeholder — no fake address is published.
+             Supply the real business email in src/config/site.ts and this
+             becomes a live mailto link automatically. */
+          <p class="text-sm text-neutral-500">Contact details coming shortly.</p>
+        )
+      }
+    </div>
+  </div>
+</BaseLayout>

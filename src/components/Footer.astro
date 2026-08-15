@@ -1,0 +1,61 @@
+---
+/**
+ * Footer — STRUCTURAL SHELL ONLY (Phase 1).
+ *
+ * Visual style is undecided (CLAUDE.md requires footer variants to be offered
+ * before one is built) — Phase 2.
+ *
+ * Decision 1.6: NO "Made in Tamil Nadu, serving Pan India" line. The approved
+ * positioning is global. Do not reintroduce region-locked copy here.
+ *
+ * Legal/trust items (Udyam/MSME number, registered firm name) are NOT yet
+ * decided and must never be invented — see CLAUDE.md.
+ */
+import { BRAND, NAV } from '../config/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-16 border-t border-neutral-200">
+  <div class="mx-auto max-w-5xl px-4 py-10">
+    <nav aria-label="Footer">
+      <ul class="flex flex-wrap gap-x-6 gap-y-2">
+        {
+          NAV.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class="text-sm text-neutral-700 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <!-- PLACEHOLDER: registered firm name and Udyam/MSME number, once available.
+         Never publish a registration number that has not actually been issued. -->
+
+    <div class="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-neutral-200 pt-6">
+      <p class="text-sm text-neutral-600">&copy; {year} {BRAND}. All rights reserved.</p>
+      <ul class="flex gap-x-6">
+        <li>
+          <a
+            href="/terms/"
+            class="text-sm text-neutral-600 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900"
+            >Terms</a
+          >
+        </li>
+        <li>
+          <a
+            href="/privacy/"
+            class="text-sm text-neutral-600 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900"
+            >Privacy</a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+/*
+ * Baseline accessibility only.
+ *
+ * Design tokens — brand colours, type scale, spacing rhythm — belong here but
+ * are NOT yet defined: palette and typography are Phase 2 decisions awaiting
+ * founder approval. CLAUDE.md: never apply a palette without approval.
+ */
+
+/* CLAUDE.md requires prefers-reduced-motion to be respected site-wide.
+   Enforced here so it holds for every component added later. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
