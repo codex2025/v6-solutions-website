@@ -303,3 +303,36 @@ follow-up instructions in the same message.
 ### Still not live until the founder completes the steps above
 
 Everything is built, committed, and pushed — but the site is **not yet reachable at any public URL** until Cloudflare Pages is connected. No claim is made otherwise.
+
+---
+
+## Phase 4.1 — Live site had no static assets at all
+
+**Date:** 2026-08-20
+**Trigger:** Founder connected via Cloudflare's dashboard exactly as instructed above, and got a
+live URL — `https://v6-solutions-website.praveenkumar22012025.workers.dev/` — but reported the
+logo missing.
+
+### What was actually wrong
+
+Not just the logo. Checked the live site directly: **every static asset 404s**, including a raw
+request for the exact webp file path the local build produces
+(`/_astro/v6-icon.<hash>.webp`). The page HTML itself doesn't even reference that path — it
+references Astro's on-demand `/_image/?href=...` transform endpoint, which only exists in Astro's
+**server** output mode. `astro.config.ts` sets `output: 'static'`; the local build (verified
+directly in `dist/`) correctly produces static `.webp` files with no such endpoint. So the deployed
+build is not simply "my `npm run build` output, served" — something in the deploy path changed how
+Astro handled images.
+
+| # | Decision | Choice | Notes |
+|---|---|---|---|
+| 4.3 | **Root cause: Cloudflare's current dashboard creates a *Workers* project via "Connect to Git", not classic Pages** | The `.workers.dev` URL (not `.pages.dev`) confirms it — Cloudflare has been unifying Pages into Workers. A Workers project needs an explicit `assets` binding telling it where the static files live and how to serve them; without one, Cloudflare had nothing telling it `dist/` was a folder of static files to publish, so none of them made it live — only the pre-rendered HTML did. | Founder confirmed they followed the exact "Connect to Git" steps given in Phase 4 — this wasn't user error, the target product changed under the same instructions. |
+| 4.4 | **Fix: added `wrangler.jsonc`** | `{ name: "v6-solutions-website", compatibility_date: "2026-08-20", assets: { directory: "./dist", not_found_handling: "404-page" } }`. No `main` script — this is an assets-only Worker, correct for a fully static site. `not_found_handling: "404-page"` serves Astro's generated `404.html` for unmatched routes (right choice for a real multi-page site; `single-page-application` would be wrong here). Validated locally with `wrangler versions upload --dry-run` before pushing. | Since the Cloudflare project is git-connected, pushing this should trigger an automatic redeploy that picks it up — no manual action needed beyond what the founder already did. **Not yet confirmed live** — check the URL again after the next auto-deploy completes. |
+
+### If this doesn't fix it
+
+The dashboard's own **Build output directory** setting (set to `dist` per the original Phase 4
+instructions) needs to actually match what a Workers-with-assets project expects. If the redeploy
+still 404s on static files, the next thing to check is whether Cloudflare's build system is running
+`npm run build` at all before `wrangler deploy` picks up `dist/` — worth looking at the deployment's
+build log in the Cloudflare dashboard directly, which isn't visible from here.

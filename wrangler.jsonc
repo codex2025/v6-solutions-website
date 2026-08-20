@@ -1,0 +1,19 @@
+{
+  // Decision 1.3/4.3 — this project deploys as a Cloudflare Workers "assets
+  // only" project (Cloudflare's current unified dashboard creates Workers,
+  // not classic Pages, even via "Connect to Git" — hence the .workers.dev
+  // URL). No `main` script: the site is fully static (astro.config.ts sets
+  // `output: 'static'`), so this file only needs to point at the build
+  // output and hand every request straight to those files.
+  //
+  // Without this, Cloudflare's build has nothing telling it that `dist/`
+  // is a static-assets directory to serve — that's why every static file
+  // (including the logo) 404s even though the HTML pages themselves load.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "v6-solutions-website",
+  "compatibility_date": "2026-08-20",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  }
+}
