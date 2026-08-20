@@ -1,0 +1,83 @@
+---
+/**
+ * About — dark theme per decision 2.6.
+ *
+ * Honest and minimal: only verified facts (decisions 1.6, 1.7, 1.10, 1.14).
+ * No invented founding story — CLAUDE.md requires the founders' own words for
+ * that, and we don't have them yet. Flagged as an open item below.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BRAND } from '../config/site';
+
+const description = `Six founders, one company — ${BRAND} builds hardware, software and design for clients across India and worldwide.`;
+---
+
+<BaseLayout title={`About — ${BRAND}`} description={description} theme="dark">
+  <section class="px-4 pt-16 pb-14 sm:px-6 sm:pt-20">
+    <div class="mx-auto max-w-3xl" data-reveal>
+      <p class="text-xs font-semibold tracking-[0.2em] uppercase" style="color: var(--accent-cyan);">About</p>
+      <h1 class="mt-3 text-[clamp(2rem,4.4vw,3.1rem)] leading-[1.1] font-semibold tracking-tight text-balance" style="font-family: var(--font-display); color: var(--text);">
+        Six founders, one company.
+      </h1>
+      <p class="mt-6 max-w-xl text-lg leading-relaxed" style="color: var(--muted);">
+        We're a technology company based in Tamil Nadu, working with clients across India and worldwide — hardware,
+        software, design and the engineering in between.
+      </p>
+    </div>
+  </section>
+
+  <section class="px-4 py-16 sm:px-6" style="background: var(--surface);">
+    <div class="mx-auto grid max-w-3xl gap-10 py-6 sm:grid-cols-2" data-reveal-group>
+      <div data-reveal-item>
+        <p class="text-sm font-semibold" style="color: var(--accent-blue);">Structure</p>
+        <h2 class="mt-2 text-base font-semibold" style="color: var(--text);">Six equal founders</h2>
+        <p class="mt-2 text-sm leading-relaxed" style="color: var(--muted);">
+          No single founder sits above the others. Each one owns real parts of the work — see the{' '}
+          <a href="/team/" class="focus-ring underline underline-offset-4" style="color: var(--accent-cyan);">team page</a>{' '}
+          for who does what.
+        </p>
+      </div>
+      <div data-reveal-item>
+        <p class="text-sm font-semibold" style="color: var(--accent-cyan);">Range</p>
+        <h2 class="mt-2 text-base font-semibold" style="color: var(--text);">Hardware and software, together</h2>
+        <p class="mt-2 text-sm leading-relaxed" style="color: var(--muted);">
+          Eight fields under one roof — see the{' '}
+          <a href="/services/" class="focus-ring underline underline-offset-4" style="color: var(--accent-cyan);">services page</a>{' '}
+          for the full list.
+        </p>
+      </div>
+      <div data-reveal-item>
+        <p class="text-sm font-semibold" style="color: var(--accent-lime);">Reach</p>
+        <h2 class="mt-2 text-base font-semibold" style="color: var(--text);">India and worldwide</h2>
+        <p class="mt-2 text-sm leading-relaxed" style="color: var(--muted);">
+          Software, design, AR/VR, marketing and video work ship anywhere. Hardware automation and CCTV are on-site
+          work — India only, for now.
+        </p>
+      </div>
+      <div data-reveal-item>
+        <p class="text-sm font-semibold" style="color: var(--accent-blue);">Proof</p>
+        <h2 class="mt-2 text-base font-semibold" style="color: var(--text);">We build our own products too</h2>
+        <p class="mt-2 text-sm leading-relaxed" style="color: var(--muted);">
+          Our first is a{' '}
+          <a href="/products/ic-tester/" class="focus-ring underline underline-offset-4" style="color: var(--accent-cyan);">low-cost IC tester</a>,
+          {' '}currently in development.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-4 py-16 text-center sm:px-6" data-reveal>
+    <p class="mx-auto max-w-md text-sm leading-relaxed" style="color: var(--muted);">
+      The founding story — in the founders' own words — is coming. We'd rather leave this section short than fill it
+      with something nobody actually said.
+    </p>
+    <a
+      href="/contact/"
+      data-magnetic
+      class="ripple focus-ring press-feedback mt-8 inline-block rounded-full px-6 py-3 text-sm font-semibold"
+      style="background: var(--btn-bg); color: var(--btn-text);"
+    >
+      Get in touch
+    </a>
+  </section>
+</BaseLayout>

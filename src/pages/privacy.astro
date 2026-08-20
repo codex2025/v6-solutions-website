@@ -1,0 +1,22 @@
+---
+/**
+ * Privacy — placeholder. Light theme per decision 2.6. No legal text invented.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BRAND } from '../config/site';
+---
+
+<BaseLayout title={`Privacy — ${BRAND}`} description="Privacy policy." theme="light" noindex>
+  <section class="px-4 py-24 sm:px-6">
+    <div class="mx-auto max-w-xl text-center" data-reveal>
+      <h1 class="text-2xl font-semibold tracking-tight" style="font-family: var(--font-display); color: var(--text);">Privacy Policy</h1>
+      <p class="mt-4 text-sm leading-relaxed" style="color: var(--muted);">
+        This page isn't written yet. We'd rather leave it blank than publish placeholder legal text as if it were
+        real.
+      </p>
+      <a href="/contact/" class="focus-ring mt-6 inline-block text-sm underline underline-offset-4" style="color: var(--accent-blue);">
+        Questions? Get in touch.
+      </a>
+    </div>
+  </section>
+</BaseLayout>

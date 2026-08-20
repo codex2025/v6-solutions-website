@@ -161,3 +161,58 @@ own decision batch because it directly amends existing hard requirements.
 - Animation level was originally meant to be a simple none/subtle/showcase pick (CLAUDE.md §7) — superseded by decision 2.7's much more specific direction.
 - Per-service visual motif assignments (which of the 8 services gets which 3D/motion treatment) are a build-time judgment call, not individually interviewed — founder to review once Home ships and correct anything that reads wrong for that service.
 - Typography (2.5) is provisional, not confirmed — see note above.
+
+---
+
+## Phase 3 — Core pages
+
+**Date:** 2026-08-20
+**Batches:** none — founder approved Home and said "continue this treatment to every other
+page," so the remaining pages were built directly against the Phase 2 system rather than
+interviewed section-by-section. Anything that needed a judgment call is logged below, not
+silently decided.
+
+### What was built
+
+All 24 routes now build (`0 errors, 0 warnings, 0 hints`):
+
+| Page | Theme | Notes |
+|---|---|---|
+| `/` (Home) | dark | Phase 2 build, unchanged this phase except reading services from the new collection. |
+| `/services/` + 8 `/services/<slug>/` | light | New `services` content collection — 8 real markdown files (title/tagline/summary/deliverables/process/faq/coverage) per CLAUDE.md's schema. Copy is a **first draft**, not founder-approved. |
+| `/products/` + `/products/ic-tester/` | dark | Honest "in development" framing — no invented specs, pricing or ship date. Second procedural Three.js scene (a chip on a test bed, swept by a scanning beam) — see decision 3.1. |
+| `/portfolio/` + 4 `/portfolio/<slug>/` | light | New project entries — see decision 3.2. |
+| `/team/` | light | **Rebuilt** onto the main `BaseLayout` (was on `PortfolioLayout` with no site nav) — see decision 3.3. `/team/<slug>/` pages are untouched. |
+| `/about/` | dark | Honest, minimal, verified facts only — see decision 3.4. |
+| `/contact/` | light | No working form — see decision 3.5. |
+| `/terms/`, `/privacy/`, `/404/` | light | Placeholder pages, `noindex`, no invented legal text. |
+
+### Decisions made without a separate interview batch
+
+| # | Decision | Choice | Notes |
+|---|---|---|---|
+| 3.1 | **Second Three.js scene for the IC Tester hero** | A procedurally-built chip (box body, pin rows, pin-1 marker, test-bed grid, sweeping scan beam) — not a render of the real product. | Extends decision 2.9's "no external 3D assets" rule to a second page. `src/three/scene.ts` now takes a `kind` param (`'nodes'` \| `'chip'`) sharing one renderer/camera/resize/pointer-parallax harness. |
+| 3.2 | **Portfolio's first 4 projects** | Shyamalan V's own personal/academic projects (VeriTrust-AI, Bizpulse, Beaute-AI, iLab XR Simulation), sourced verbatim from his own portfolio markdown — real problem/solution/outcome text, nothing invented. `client: Personal project` (not `Confidential`, which implies a real client is being hidden — see `portfolio/INTEGRATION.md` §4's suggested convention). | Client work publishes here once delivered and cleared to share; until then this is honest, not empty. |
+| 3.3 | **Team index moved off `PortfolioLayout` onto `BaseLayout`** | The directory/grid page is a company page, not any one founder's space, so it now carries the real site Header/Footer and light-theme tokens. Each individual `/team/<slug>/` page is untouched — still `PortfolioLayout`, no site chrome, per decisions 1.14-1.17. | Previously the whole `/team/` section (index included) had zero way back into the main site except the browser back button — an unnoticed Phase 1.5 gap, now fixed for the index only. |
+| 3.4 | **About page has no founding-story narrative** | Four verified facts (structure, range, reach, product proof) plus an explicit line saying the founders' own words are still needed. | CLAUDE.md requires the founders' own words for this section; Claude Code doesn't have them and won't invent them. |
+| 3.5 | **Contact page ships without a working form** | Mailto link if `HAS_CONTACT_EMAIL` is true, otherwise the same honest "coming shortly" fallback as the holding page. | Continues the Phase 1.5 precedent: no Web3Forms/Formspree key exists yet, and a form that silently discards messages is worse than none. |
+
+### Technical notes from this phase
+
+| Finding | Detail |
+|---|---|
+| Astro/JSX whitespace trimming | Inline links split across source lines (`text\n<a>link</a>\ntext`) lose their surrounding spaces at build time — caught on `/about/` ("see theteam pagefor") and fixed with explicit `{' '}` spacers. Worth a second look on any future page that wraps inline links across lines. |
+| `aspect-square` doesn't fit every hero visual | The IC Tester page's chip motif is inherently wide/flat; forcing it into a square container left a lot of dead space around the no-JS/lite-tier fallback SVG. Changed to `aspect-[4/3]` for that page only — the Home page's six-node scene keeps `aspect-square`, which suits it fine. |
+| Two-tier delivery confirmed at the build level, not just by design | `dist/_astro/`: the only script referenced in a page's initial HTML is a ~2.7 KB baseline module. The Three.js scene chunk (~525 KB) and GSAP + ScrollTrigger (~113 KB) never appear as `<script>` or `modulepreload` tags — they're fetched only via the rich tier's dynamic `import()`. |
+| Visual verification method | The Claude in Chrome extension wasn't connected in this session. Used the `playwright` CLI (already cached locally, no install) for real-browser screenshots instead — `npx playwright screenshot`, plus a small scripted `playwright-core` session (since removed) to confirm GSAP ScrollTrigger fires correctly on genuine scroll. **Caveat found and worth remembering:** Playwright's `--full-page` screenshot flag does not fire real scroll events, so ScrollTrigger-gated content below the fold renders as still-hidden in that specific capture mode even though it works correctly for real visitors — don't mistake that for a bug next time. |
+
+### Open items carried forward from Phase 1/1.5, still true
+
+- [ ] Business email address, Web3Forms/Formspree key — blocks a live Contact form.
+- [ ] Founders #2-6 — each needs one markdown file (`FOUNDER-PORTFOLIOS.md`).
+- [ ] Founder headshots.
+- [ ] Context7 + GitHub MCP not connected; private GitHub repo and Cloudflare Pages project not created — **nothing built so far is live.**
+- [ ] `CLAUDE.md` rename + amendment for decision 1.6.
+- [ ] Terms/Privacy real legal text; Udyam/MSME registration number once issued.
+- [ ] Typography (2.5) and per-service icon/motif choices (3.1's sibling for the other 7 services) are Claude Code's picks, not yet founder-reviewed.
+- [ ] Service copy (tagline/summary/deliverables/process/faq for all 8) is a first draft.
