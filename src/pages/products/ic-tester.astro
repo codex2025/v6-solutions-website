@@ -8,12 +8,12 @@
  * beats fake proof.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { BRAND, HAS_CONTACT_EMAIL, CONTACT_EMAIL } from '../../config/site';
+import { HAS_CONTACT_EMAIL, CONTACT_EMAIL } from '../../config/site';
 
 const description = 'A low-cost IC tester — in-house electronics test equipment, currently in development.';
 ---
 
-<BaseLayout title={`Low-Cost IC Tester — ${BRAND}`} description={description} theme="dark">
+<BaseLayout title="Low-Cost IC Tester" description={description} theme="dark">
   <section class="relative overflow-hidden px-4 pt-14 pb-16 sm:px-6 sm:pt-20 sm:pb-20">
     <div
       class="pointer-events-none absolute inset-0 -z-10 opacity-60"

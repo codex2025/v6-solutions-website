@@ -4,7 +4,6 @@
  */
 import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { BRAND } from '../../config/site';
 import { SERVICE_ICONS } from '../../lib/service-icons';
 
 export async function getStaticPaths() {
@@ -22,7 +21,7 @@ const icon = SERVICE_ICONS[service?.data.icon ?? 'code'];
 const description = solution;
 ---
 
-<BaseLayout title={`${title} — ${BRAND}`} description={description} theme="light">
+<BaseLayout title={title} description={description} theme="light">
   <section class="px-4 pt-16 pb-14 sm:px-6 sm:pt-20">
     <div class="mx-auto max-w-3xl" data-reveal>
       <a href="/portfolio/" class="focus-ring text-xs font-semibold" style="color: var(--muted);">&larr; Portfolio</a>

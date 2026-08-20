@@ -6,7 +6,6 @@
  */
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { BRAND } from '../../config/site';
 import { SERVICE_ICONS } from '../../lib/service-icons';
 
 export async function getStaticPaths() {
@@ -26,7 +25,7 @@ const currentIndex = allServices.findIndex((s) => s.data.slug === service.data.s
 const next = allServices[(currentIndex + 1) % allServices.length];
 ---
 
-<BaseLayout title={`${title} — ${BRAND}`} description={summary} theme="light">
+<BaseLayout title={title} description={summary} theme="light">
   <section class="px-4 pt-16 pb-14 sm:px-6 sm:pt-20">
     <div class="mx-auto max-w-3xl" data-reveal>
       <a href="/services/" class="focus-ring text-xs font-semibold" style="color: var(--muted);">&larr; All services</a>

@@ -4,7 +4,7 @@
  */
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { BRAND, TAGLINE } from '../../config/site';
+import { TAGLINE } from '../../config/site';
 import { SERVICE_ICONS } from '../../lib/service-icons';
 
 const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
@@ -12,7 +12,7 @@ const services = (await getCollection('services')).sort((a, b) => a.data.order -
 const description = 'Eight fields, one accountable team — IT, design, hardware, CCTV, CAD, AR/VR & AI, marketing and video.';
 ---
 
-<BaseLayout title={`Services — ${BRAND}`} description={description} theme="light">
+<BaseLayout title="Services" description={description} theme="light">
   <section class="px-4 pt-16 pb-14 sm:px-6 sm:pt-20">
     <div class="mx-auto max-w-6xl" data-reveal>
       <p class="text-xs font-semibold tracking-[0.2em] uppercase" style="color: var(--accent-cyan);">{TAGLINE}</p>
