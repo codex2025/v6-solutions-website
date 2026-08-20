@@ -237,3 +237,33 @@ hero's 3D scene is "the worst," and the header logo wasn't rendering fully.
 - Founder said "worst design I've ever seen" / "I don't like the home page itself" as a general statement, broader than the three concrete items above. Decisions 2.11–2.13 address the specific, actionable parts of that feedback; whether the founder wants a more fundamental rework of Home's layout/copy/typography beyond these fixes is still an open question — surfaced back to them rather than guessed at.
 - The IC Tester page still has its own procedural 3D scene (decision 3.1) — left in place since it wasn't named, but the founder may want it gone too given the Home scene's reception.
 - Typography (2.5) is still provisional and unreviewed by the founder — the same IBM Plex Mono/Sans pick that shipped with the disliked Home page. Worth confirming explicitly now rather than assuming it survived the "worst design" verdict.
+
+---
+
+## Phase 3.6 — Circuit Pulse, site-wide
+
+**Date:** 2026-08-20
+**Trigger:** Shown a live, interactive comparison of two richer directions (Aurora Glow / Circuit
+Pulse — an Artifact, not code) built specifically because the "worst design" feedback was too broad
+to act on blindly a third time. Founder picked Circuit Pulse and gave four concrete, specific
+follow-up instructions in the same message.
+
+| # | Decision | Choice | Notes |
+|---|---|---|---|
+| 2.14 | **Circuit Pulse hero band adopted site-wide.** | Every page now opens with the same dark, illuminated band — grid background, glowing pulsing nodes, an animated dashed circuit-trace divider into the light body below. This is **one consistent treatment repeated identically on every page** (a fixed design decision), explicitly **not** a return to decision 2.11's rejected per-page dark/light split — the body content below the hero is still the one light theme everywhere. New shared primitives: `--hero-*` tokens and `.hero-band`/`.hero-grid`/`.hero-node`/`.hero-eyebrow` in `global.css`, `HeroTrace.astro` (the divider), `PageHero.astro` (the reusable frame most pages now use). | Founder: "use circuit pulse, but customize it uniquely for respective pages." Each page keeps the same shape but a different accent colour/motif — Home gets the logo spotlight (2.15), Services floats the real per-service icons in its hero, Team scatters six nodes (one per founder) instead of the usual three, Contact gets a "signal ping" concentric-ring motif, service/project detail pages tint everything in that item's own icon colour. |
+| 2.15 | **Home hero: big levitating V6 logo, spotlit, right side.** | Two-column hero again (text left, logo right, `lg:` breakpoint — stacks on mobile). The actual logo PNG at large size, a soft blurred radial glow behind it (`.spotlight-glow`), a slow continuous float animation (`.levitate`), and `data-tilt` for pointer-parallax on the rich tier. Not a redraw, not an abstract scene — the real brand mark. | Founder: "provide vs logo big spot light in right side of the home page that levitates." ("vs logo" read as "V6 logo" — the only logo asset in the project.) |
+| 2.16 | **Header rebuilt: capsule + glassmorphism on scroll.** | Always dark-glass (works whether it's floating over a hero band or the light body — no per-page colour logic needed). Default state: full-width, minimal, blended into the hero. Past a 40px scroll threshold: shrinks into a centered floating pill with backdrop-blur, rounded corners, and a shadow. `position: fixed` now (was `sticky`) — every hero band carries its own top padding to clear it. Scroll listener lives in `motion.ts`'s baseline tier (cheap, rAF-throttled), not gated behind the rich tier. | Founder: "it missed header tab, that tab has to be use capsule mode while scrolling and glass morphism" (read as: the header needs work — capsule-on-scroll + glassmorphism — not a literal missing nav, which was already present). |
+| 2.17 | **Footer rebuilt as a "control panel."** | Dark, same `--hero-*` tokens as the hero bands so it reads as the same system, not a bolt-on. Animated gradient top border, an LED status rail (pulsing dots per nav item plus a live "Available for projects" indicator), three-column layout, hover-glow links. | Founder: "the footer section is not good." Directly matches the Circuit Pulse footer already shown and approved in the comparison artifact. |
+
+### Two real bugs found and fixed during this rollout (not design opinions)
+
+| Bug | Fix |
+|---|---|
+| `PageHero`'s fixed internal order (eyebrow always renders before the slot) put "← All services" / "← Portfolio" back-links **below** the coverage/client badge on every service and project detail page — wrong reading order. | Added a named `pretext` slot to `PageHero.astro` that renders before the eyebrow, and moved every back-link into it. |
+| Contact page (hero band + footer, no light body content between them) left a light-coloured gap between the two dark elements on viewports taller than ~650px of content, because `<main>` (`flex-1` + `body`'s `min-h-screen`) stretches past short content and exposes its own unstyled background. | Gave Contact's hero content `min-h-[80vh]` so it dominates the viewport regardless of screen height. Verified fixed at 1100px viewport height, where the gap was previously visible. Other hero-band pages have enough body content below to never trigger this — only Contact was hero-only. |
+
+### Deferred / still open
+
+- "customize it uniquely for respective pages" was honoured through colour/motif variation (per-service icons, per-project accent colours, six founder nodes, ping rings) within one shared structural system, not fully bespoke per-page 3D scenes — a deliberate scope call under time pressure, not silently under-delivered. Worth naming to the founder as the interpretation taken, in case they pictured something more elaborate per page.
+- IC Tester's own chip 3D scene (decision 3.1) is now restyled into the new hero-band system but was not otherwise revisited.
+- Typography (2.5) is still the same unreviewed IBM Plex Mono/Sans pick, now carried through a third visual iteration.

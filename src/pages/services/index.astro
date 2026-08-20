@@ -1,31 +1,60 @@
 ---
 /**
- * Services index.
+ * Services index. Circuit Pulse hero (decision 2.14) — the floating
+ * badges scattered in the hero use the real per-service icons/colours
+ * instead of generic dots, so this page's hero reads as "services"
+ * specifically rather than a copy of every other page's hero.
  */
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
 import { TAGLINE } from '../../config/site';
 import { SERVICE_ICONS } from '../../lib/service-icons';
 
 const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
 
 const description = 'Eight fields, one accountable team — IT, design, hardware, CCTV, CAD, AR/VR & AI, marketing and video.';
+
+const floatingIcons = [services[0], services[3], services[5], services[7]].map((s, i) => ({
+  icon: SERVICE_ICONS[s.data.icon],
+  pos: [
+    { top: '14%', right: '4%' },
+    { top: '68%', right: '10%' },
+    { top: '30%', right: '20%' },
+    { top: '80%', right: '2%' },
+  ][i],
+}));
 ---
 
 <BaseLayout title="Services" description={description}>
-  <section class="px-4 pt-16 pb-14 sm:px-6 sm:pt-20">
-    <div class="mx-auto max-w-6xl" data-reveal>
-      <p class="text-xs font-semibold tracking-[0.2em] uppercase" style="color: var(--accent-cyan);">{TAGLINE}</p>
-      <h1 class="mt-3 max-w-2xl text-[clamp(2rem,4.4vw,3.1rem)] leading-[1.1] font-semibold tracking-tight text-balance" style="font-family: var(--font-display); color: var(--text);">
+  <PageHero eyebrow={TAGLINE} accent="#22c7d9">
+    {
+      floatingIcons.map(({ icon, pos }) => (
+        <span
+          class="hero-float-icon hidden lg:flex"
+          style={`top:${pos.top};right:${pos.right};color:${icon.accent};box-shadow:0 0 16px 2px ${icon.accent}66;`}
+          aria-hidden="true"
+        >
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" set:html={icon.svg} />
+        </span>
+      ))
+    }
+
+    <div data-reveal-group>
+      <h1
+        data-reveal-item
+        class="mt-4 max-w-2xl text-[clamp(2rem,4.4vw,3.1rem)] leading-[1.1] font-semibold tracking-tight text-balance"
+        style="font-family: var(--font-display);"
+      >
         Eight fields, one accountable team.
       </h1>
-      <p class="mt-5 max-w-xl text-base leading-relaxed" style="color: var(--muted);">
+      <p data-reveal-item class="mt-5 max-w-xl text-base leading-relaxed" style="color: var(--hero-muted);">
         Software and design ship anywhere. Hardware automation and CCTV are on-site work — for now, that's India only.
       </p>
     </div>
-  </section>
+  </PageHero>
 
-  <section class="px-4 pb-24 sm:px-6">
+  <section class="px-4 py-16 sm:px-6 sm:py-20">
     <div class="mx-auto grid max-w-6xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" data-reveal-group>
       {
         services.map((service) => {
@@ -82,5 +111,17 @@ const description = 'Eight fields, one accountable team — IT, design, hardware
   }
   [data-motion-tier='lite'] .service-card:hover {
     transform: translateY(-3px);
+  }
+
+  .hero-float-icon {
+    position: absolute;
+    z-index: 0;
+    width: 40px;
+    height: 40px;
+    padding: 9px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(6px);
+    animation: levitate 6s ease-in-out infinite;
   }
 </style>

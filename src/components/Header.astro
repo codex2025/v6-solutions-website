@@ -1,10 +1,16 @@
 ---
 /**
- * Header — Phase 2 build (decisions 2.5, 2.7, 2.8, 2.11).
+ * Header — Phase 3.5 rebuild (Circuit Pulse direction, founder-specified).
  *
- * Reads the global `--bg` / `--text` / `--accent-blue` tokens from
- * global.css (decision 2.11 — one consistent light theme site-wide, no
- * per-page switching). Never hardcode a colour here.
+ * Always dark glass, in both scroll states — deliberately, so it reads
+ * correctly whether it's floating over a page's dark hero band or over the
+ * light body further down, without needing to track what's behind it.
+ *
+ * Default state: full-width, minimal, blended into the hero.
+ * Scrolled state (`data-scrolled="true"`, set by initHeaderScroll in
+ * motion.ts): shrinks into a centered floating capsule with glassmorphism.
+ * `position: fixed`, so every hero section needs its own top padding to
+ * clear it — see the hero-band pattern in global.css.
  *
  * Mobile menu still uses <details>/<summary> — works with JavaScript
  * disabled, matching the CSS-only lite tier (decision 2.8).
@@ -17,15 +23,11 @@ const path = Astro.url.pathname;
 const isActive = (href: string) => path === href || path.startsWith(href);
 ---
 
-<header class="sticky top-0 z-50 border-b" style="background: color-mix(in srgb, var(--bg) 82%, transparent); border-color: var(--border); backdrop-filter: blur(10px);">
-  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
-    <a
-      href="/"
-      class="ripple focus-ring flex items-center gap-2.5 rounded-sm px-1 py-1"
-      style="color: var(--text);"
-    >
+<header data-site-header class="site-header">
+  <div class="site-header-inner">
+    <a href="/" class="ripple focus-ring hdr-logo">
       <Image src={icon} width={35} height={28} alt="" class="h-7 w-auto" />
-      <span class="text-[15px] font-semibold tracking-tight" style="font-family: var(--font-display);">{BRAND}</span>
+      <span class="hdr-wordmark" style="font-family: var(--font-display);">{BRAND}</span>
     </a>
 
     <!-- Desktop navigation -->
@@ -37,8 +39,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
               <a
                 href={item.href}
                 aria-current={isActive(item.href) ? 'page' : undefined}
-                class="nav-link ripple focus-ring block rounded-sm px-3 py-2 text-[13.5px] font-medium"
-                style={`color: ${isActive(item.href) ? 'var(--text)' : 'var(--muted)'};`}
+                class="nav-link ripple focus-ring block rounded-full px-3 py-2 text-[13.5px] font-medium"
                 data-active={isActive(item.href) ? 'true' : undefined}
               >
                 {item.label}
@@ -49,45 +50,24 @@ const isActive = (href: string) => path === href || path.startsWith(href);
       </ul>
     </nav>
 
-    <a
-      href="/contact/"
-      data-magnetic
-      class="ripple focus-ring press-feedback hidden rounded-full px-4 py-2 text-[13px] font-semibold sm:inline-block"
-      style="background: var(--btn-bg); color: var(--btn-text);"
-    >
-      Get in touch
-    </a>
+    <a href="/contact/" data-magnetic class="ripple focus-ring press-feedback hdr-cta hidden sm:inline-block"> Get in touch </a>
 
     <!-- Mobile navigation: no JavaScript required -->
     <details class="relative sm:hidden">
-      <summary
-        class="ripple focus-ring list-none rounded-md border px-3 py-2 text-sm"
-        style="border-color: var(--border); color: var(--text);"
-      >
-        Menu
-      </summary>
-      <nav
-        aria-label="Primary"
-        class="absolute right-0 z-10 mt-2 min-w-44 rounded-lg border p-1.5 shadow-lg"
-        style="border-color: var(--border); background: var(--surface);"
-      >
+      <summary class="ripple focus-ring hdr-menu-btn"> Menu </summary>
+      <nav aria-label="Primary" class="hdr-mobile-nav">
         <ul class="flex flex-col">
           {
             NAV.map((item) => (
               <li>
-                <a
-                  href={item.href}
-                  aria-current={isActive(item.href) ? 'page' : undefined}
-                  class="focus-ring block rounded px-3 py-2 text-sm"
-                  style={`color: ${isActive(item.href) ? 'var(--text)' : 'var(--muted)'}; font-weight: ${isActive(item.href) ? '600' : '400'};`}
-                >
+                <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined} class="focus-ring hdr-mobile-link">
                   {item.label}
                 </a>
               </li>
             ))
           }
-          <li class="mt-1 border-t pt-1" style="border-color: var(--border);">
-            <a href="/contact/" class="focus-ring block rounded px-3 py-2 text-sm font-semibold" style="color: var(--accent-blue);">
+          <li class="hdr-mobile-cta-row">
+            <a href="/contact/" class="focus-ring hdr-mobile-cta">
               Get in touch
             </a>
           </li>
@@ -98,27 +78,147 @@ const isActive = (href: string) => path === href || path.startsWith(href);
 </header>
 
 <style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .site-header-inner {
+    pointer-events: auto;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 0;
+    padding: 14px clamp(16px, 4vw, 28px);
+    border-radius: 0;
+    background: rgba(9, 13, 24, 0.42);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    transition:
+      max-width 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+      margin-top 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+      padding 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+      border-radius 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+      background 0.4s ease,
+      box-shadow 0.4s ease;
+  }
+
+  [data-site-header][data-scrolled='true'] .site-header-inner {
+    max-width: min(880px, calc(100% - 32px));
+    margin-top: 12px;
+    padding: 9px 14px;
+    border-radius: 9999px;
+    background: rgba(9, 13, 24, 0.66);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    box-shadow:
+      0 14px 34px -14px rgba(2, 5, 14, 0.55),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  }
+
+  .hdr-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    border-radius: 999px;
+    padding: 2px 4px;
+    color: #f4f6f8;
+  }
+  .hdr-wordmark {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
   .nav-link {
     position: relative;
+    color: #b9c2d6;
     transition: color 0.15s ease;
+  }
+  .nav-link:hover,
+  .nav-link[data-active] {
+    color: #ffffff;
   }
   .nav-link::after {
     content: '';
     position: absolute;
     left: 12px;
     right: 12px;
-    bottom: 3px;
+    bottom: 4px;
     height: 2px;
-    background: var(--grad-text);
+    border-radius: 2px;
+    background: linear-gradient(90deg, #4c8cff, #3cd3e4, #9cfa7c);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.25s ease;
   }
-  .nav-link:hover {
-    color: var(--text) !important;
-  }
   .nav-link:hover::after,
   .nav-link[data-active]::after {
     transform: scaleX(1);
+  }
+
+  .hdr-cta {
+    border-radius: 999px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    background: linear-gradient(120deg, #2e7cff, #22c7d9);
+    color: #ffffff;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+  }
+
+  .hdr-menu-btn {
+    list-style: none;
+    cursor: pointer;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    padding: 8px 14px;
+    font-size: 13px;
+    color: #f4f6f8;
+  }
+  .hdr-mobile-nav {
+    position: absolute;
+    right: 0;
+    z-index: 10;
+    margin-top: 10px;
+    min-width: 12rem;
+    border-radius: 16px;
+    padding: 6px;
+    background: rgba(9, 13, 24, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 20px 44px -18px rgba(2, 5, 14, 0.6);
+  }
+  .hdr-mobile-link {
+    display: block;
+    border-radius: 10px;
+    padding: 9px 12px;
+    font-size: 13.5px;
+    color: #d3d9e6;
+  }
+  .hdr-mobile-link[aria-current='page'] {
+    color: #ffffff;
+    font-weight: 600;
+  }
+  .hdr-mobile-cta-row {
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .hdr-mobile-cta {
+    display: block;
+    border-radius: 10px;
+    padding: 9px 12px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #8ff56a;
   }
 </style>

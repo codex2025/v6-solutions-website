@@ -1,0 +1,36 @@
+---
+/**
+ * Shared Circuit Pulse hero-band frame (decision 2.14) — the grid, glowing
+ * nodes, eyebrow and trace divider every page's hero uses identically.
+ * Each page slots its own heading/content in and picks its own accent
+ * colour, so the SHAPE is consistent site-wide but the content still reads
+ * as that page's own (founder direction: "customize it uniquely for
+ * respective pages").
+ */
+import HeroTrace from './HeroTrace.astro';
+
+interface Props {
+  eyebrow: string;
+  /** Tints the eyebrow text and the glowing nodes. Defaults to brand lime. */
+  accent?: string;
+  /** Shorter pages (detail templates) get less bottom padding. */
+  compact?: boolean;
+}
+
+const { eyebrow, accent = '#8ff56a', compact = false } = Astro.props;
+---
+
+<section class={`hero-band ${compact ? 'pb-14 sm:pb-16' : 'pb-16 sm:pb-20'}`}>
+  <div class="hero-grid"></div>
+  <div class="hero-node" style={`top:22%;left:7%;background:${accent};box-shadow:0 0 10px 2px ${accent}`}></div>
+  <div class="hero-node" style={`top:72%;left:4%;animation-delay:-1s;background:${accent};box-shadow:0 0 10px 2px ${accent}`}></div>
+  <div class="hero-node" style={`top:85%;left:18%;animation-delay:-1.6s;background:${accent};box-shadow:0 0 10px 2px ${accent}`}></div>
+
+  <div class="relative z-[1] mx-auto max-w-6xl px-4 sm:px-6">
+    <slot name="pretext" />
+    <p class="hero-eyebrow" style={`color:${accent}`}>{eyebrow}</p>
+    <slot />
+  </div>
+
+  <HeroTrace />
+</section>

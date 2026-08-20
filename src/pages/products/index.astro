@@ -1,28 +1,33 @@
 ---
 /**
  * Products index — container page from decision 1.11, built so a second
- * product is just another card here later.
+ * product is just another card here later. Circuit Pulse hero (decision
+ * 2.14) via the shared PageHero frame.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
 import { BRAND } from '../../config/site';
 
 const description = `${BRAND}'s in-house products — proof we build things, not just services.`;
 ---
 
 <BaseLayout title="Products" description={description}>
-  <section class="px-4 pt-16 pb-14 sm:px-6 sm:pt-20">
-    <div class="mx-auto max-w-6xl" data-reveal>
-      <p class="text-xs font-semibold tracking-[0.2em] uppercase" style="color: var(--accent-lime);">Products</p>
-      <h1 class="mt-3 max-w-2xl text-[clamp(2rem,4.4vw,3.1rem)] leading-[1.1] font-semibold tracking-tight text-balance" style="font-family: var(--font-display); color: var(--text);">
+  <PageHero eyebrow="Products" accent="#8ff56a">
+    <div data-reveal-group>
+      <h1
+        data-reveal-item
+        class="mt-4 max-w-2xl text-[clamp(2rem,4.4vw,3.1rem)] leading-[1.1] font-semibold tracking-tight text-balance"
+        style="font-family: var(--font-display); color: var(--hero-text);"
+      >
         We build our own things, too.
       </h1>
-      <p class="mt-5 max-w-xl text-base leading-relaxed" style="color: var(--muted);">
+      <p data-reveal-item class="mt-5 max-w-xl text-base leading-relaxed" style="color: var(--hero-muted);">
         Most of what we do is client work. This is what we build for ourselves — starting with one.
       </p>
     </div>
-  </section>
+  </PageHero>
 
-  <section class="px-4 pb-24 sm:px-6">
+  <section class="px-4 py-16 sm:px-6 sm:py-20">
     <div class="mx-auto max-w-6xl" data-reveal>
       <a
         href="/products/ic-tester/"

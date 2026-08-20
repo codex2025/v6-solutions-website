@@ -7,24 +7,28 @@
  * that, and we don't have them yet. Flagged as an open item below.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
 import { BRAND } from '../config/site';
 
 const description = `Six founders, one company — ${BRAND} builds hardware, software and design for clients across India and worldwide.`;
 ---
 
 <BaseLayout title="About" description={description}>
-  <section class="px-4 pt-16 pb-14 sm:px-6 sm:pt-20">
-    <div class="mx-auto max-w-3xl" data-reveal>
-      <p class="text-xs font-semibold tracking-[0.2em] uppercase" style="color: var(--accent-cyan);">About</p>
-      <h1 class="mt-3 text-[clamp(2rem,4.4vw,3.1rem)] leading-[1.1] font-semibold tracking-tight text-balance" style="font-family: var(--font-display); color: var(--text);">
+  <PageHero eyebrow="About" accent="#22c7d9">
+    <div data-reveal-group>
+      <h1
+        data-reveal-item
+        class="mt-4 text-[clamp(2rem,4.4vw,3.1rem)] leading-[1.1] font-semibold tracking-tight text-balance"
+        style="font-family: var(--font-display);"
+      >
         Six founders, one company.
       </h1>
-      <p class="mt-6 max-w-xl text-lg leading-relaxed" style="color: var(--muted);">
+      <p data-reveal-item class="mt-6 max-w-xl text-lg leading-relaxed" style="color: var(--hero-muted);">
         We're a technology company based in Tamil Nadu, working with clients across India and worldwide — hardware,
         software, design and the engineering in between.
       </p>
     </div>
-  </section>
+  </PageHero>
 
   <section class="px-4 py-16 sm:px-6" style="background: var(--surface);">
     <div class="mx-auto grid max-w-3xl gap-10 py-6 sm:grid-cols-2" data-reveal-group>

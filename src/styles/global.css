@@ -92,3 +92,163 @@ body {
 .press-feedback:active {
   transform: scale(0.96);
 }
+
+/*
+ * Circuit Pulse hero band (Phase 3.5, founder-directed) — decision 2.14.
+ *
+ * A dark, illuminated band used at the top of EVERY page, the same way
+ * every time — this is not per-page dark/light switching (decision 2.11
+ * still holds for the body below it). `.site-header` is `position: fixed`
+ * and dark-glass in both scroll states, so every `.hero-band` needs real
+ * top padding (see the padding already baked into the utility below) to
+ * keep its heading clear of the floating header.
+ */
+:root {
+  --hero-bg: #0a0f1c;
+  --hero-surface: #101830;
+  --hero-text: #f4f6f8;
+  --hero-muted: #93a0bc;
+  --hero-border: #1b2540;
+  --hero-grid-line: rgba(255, 255, 255, 0.05);
+}
+
+.hero-band {
+  position: relative;
+  overflow: hidden;
+  background: var(--hero-bg);
+  color: var(--hero-text);
+  padding-top: 128px;
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--hero-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hero-grid-line) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, black, transparent);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, black, transparent);
+}
+
+.hero-node {
+  position: absolute;
+  z-index: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #8ff56a;
+  box-shadow: 0 0 10px 2px rgba(143, 245, 106, 0.8);
+  animation: node-pulse 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes node-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.4);
+  }
+}
+
+.hero-eyebrow {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #22c7d9;
+}
+.hero-eyebrow .caret {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  background: #8ff56a;
+  margin-left: 3px;
+  vertical-align: -2px;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.hero-trace {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 56px;
+}
+.hero-trace path {
+  fill: none;
+  stroke: var(--hero-border);
+  stroke-width: 1.5;
+}
+.hero-trace .trace {
+  stroke: #22c7d9;
+  stroke-width: 1.5;
+  stroke-dasharray: 5 7;
+  opacity: 0.85;
+  animation: trace-dash 3.2s linear infinite;
+}
+@keyframes trace-dash {
+  to {
+    stroke-dashoffset: -240;
+  }
+}
+
+/* Reusable glow halo + levitation, used behind the Home hero's logo mark
+   and available anywhere else a floating illuminated element is wanted. */
+.spotlight-glow {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(46, 124, 255, 0.35), rgba(34, 199, 217, 0.18) 45%, transparent 70%);
+  filter: blur(40px);
+  animation: spotlight-breathe 5s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes spotlight-breathe {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+.levitate {
+  animation: levitate 5s ease-in-out infinite;
+}
+@keyframes levitate {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-16px);
+  }
+}
+.levitate-shadow {
+  animation: levitate-shadow 5s ease-in-out infinite;
+}
+@keyframes levitate-shadow {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scaleX(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scaleX(0.75);
+  }
+}

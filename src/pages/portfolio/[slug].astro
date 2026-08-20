@@ -4,6 +4,7 @@
  */
 import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
 import { SERVICE_ICONS } from '../../lib/service-icons';
 
 export async function getStaticPaths() {
@@ -22,32 +23,33 @@ const description = solution;
 ---
 
 <BaseLayout title={title} description={description}>
-  <section class="px-4 pt-16 pb-14 sm:px-6 sm:pt-20">
-    <div class="mx-auto max-w-3xl" data-reveal>
-      <a href="/portfolio/" class="focus-ring text-xs font-semibold" style="color: var(--muted);">&larr; Portfolio</a>
+  <PageHero eyebrow={`${client} · ${year}`} accent={icon.accent} compact>
+    <a slot="pretext" href="/portfolio/" class="focus-ring mb-6 inline-block text-xs font-semibold" style="color: var(--hero-muted);">&larr; Portfolio</a>
 
-      <div class="mt-5 flex items-center gap-4">
+    <div data-reveal-group>
+      <div class="mt-5 flex items-center gap-4" data-reveal-item>
         <span
-          class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl"
-          style={`background: color-mix(in srgb, ${icon.accent} 14%, transparent); color: ${icon.accent};`}
+          class="levitate flex h-14 w-14 shrink-0 items-center justify-center rounded-xl"
+          style={`background: color-mix(in srgb, ${icon.accent} 18%, transparent); color: ${icon.accent}; box-shadow: 0 0 24px 4px ${icon.accent}55;`}
         >
           <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-8 w-8" set:html={icon.svg} />
         </span>
-        <div>
-          <p class="text-xs" style="color: var(--muted);">{client} · {year}</p>
-          {service && (
-            <a href={`/services/${service.data.slug}/`} class="focus-ring text-xs font-semibold" style={`color: ${icon.accent};`}>
-              {service.data.title}
-            </a>
-          )}
-        </div>
+        {service && (
+          <a href={`/services/${service.data.slug}/`} class="focus-ring text-xs font-semibold" style={`color: ${icon.accent};`}>
+            {service.data.title}
+          </a>
+        )}
       </div>
 
-      <h1 class="mt-6 text-[clamp(1.9rem,4vw,2.75rem)] leading-[1.12] font-semibold tracking-tight text-balance" style="font-family: var(--font-display); color: var(--text);">
+      <h1
+        data-reveal-item
+        class="mt-6 text-[clamp(1.9rem,4vw,2.75rem)] leading-[1.12] font-semibold tracking-tight text-balance"
+        style="font-family: var(--font-display);"
+      >
         {title}
       </h1>
     </div>
-  </section>
+  </PageHero>
 
   <section class="px-4 pb-16 sm:px-6" style="background: var(--surface);">
     <div class="mx-auto grid max-w-3xl gap-8 py-16 sm:grid-cols-3" data-reveal-group>

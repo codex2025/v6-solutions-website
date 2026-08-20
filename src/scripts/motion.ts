@@ -25,6 +25,36 @@ export function computeMotionTier(): MotionTier {
   return 'rich';
 }
 
+/**
+ * Header capsule/glassmorphism on scroll (founder direction, Phase 3.5).
+ * Cheap and structural, not a "rich" embellishment, so it runs in both
+ * tiers: rAF-throttled scroll listener flipping one data attribute — CSS
+ * (Header.astro) does the actual shape/blur transition.
+ */
+function initHeaderScroll(): void {
+  const header = document.querySelector<HTMLElement>('[data-site-header]');
+  if (!header) return;
+
+  const THRESHOLD = 40;
+  let ticking = false;
+
+  function update(): void {
+    header!.dataset.scrolled = window.scrollY > THRESHOLD ? 'true' : 'false';
+    ticking = false;
+  }
+
+  update();
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    },
+    { passive: true },
+  );
+}
+
 function initRipple(): void {
   document.addEventListener(
     'pointerdown',
@@ -67,6 +97,7 @@ export async function initMotion(): Promise<void> {
   // prefers-reduced-motion is a hard "no" — never animate ripple feedback either.
   const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   if (!reducedMotion) initRipple();
+  initHeaderScroll();
 
   if (tier === 'rich') {
     const { initRichMotion } = await import('./motion-rich');

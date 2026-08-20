@@ -14,59 +14,68 @@
  * CLAUDE.md already states about the business.
  */
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroTrace from '../components/HeroTrace.astro';
 import { BRAND, TAGLINE, ONE_LINER } from '../config/site';
 import { SERVICE_ICONS } from '../lib/service-icons';
+import logo from '../assets/logos/v6-icon.png';
 
 const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
 ---
 
 <BaseLayout title={BRAND} description={ONE_LINER}>
-  <!-- ===== HERO ===== -->
-  <section class="relative overflow-hidden px-4 pt-14 pb-10 sm:px-6 sm:pt-20 sm:pb-14">
-    <div
-      class="pointer-events-none absolute inset-0 -z-10 opacity-60"
-      style="background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px); background-size: 34px 34px; mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black, transparent);"
-    >
-    </div>
+  <!-- ===== HERO — Circuit Pulse, decision 2.14 ===== -->
+  <section class="hero-band">
+    <div class="hero-grid"></div>
+    <div class="hero-node" style="top:20%;left:8%;"></div>
+    <div class="hero-node" style="top:70%;left:5%;animation-delay:-1s;"></div>
+    <div class="hero-node" style="top:82%;left:20%;animation-delay:-1.6s;"></div>
 
-    <div class="mx-auto max-w-3xl text-center" data-reveal-group>
-      <p
-        data-reveal-item
-        class="text-xs font-semibold uppercase tracking-[0.22em]"
-        style="background: var(--grad-text); -webkit-background-clip: text; background-clip: text; color: transparent;"
-      >
-        {TAGLINE}
-      </p>
-      <h1
-        data-reveal-item
-        class="mt-5 text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.08] font-semibold tracking-tight text-balance"
-        style="font-family: var(--font-display); color: var(--text);"
-      >
-        Hardware. Software. Design.
-      </h1>
-      <p data-reveal-item class="mx-auto mt-6 max-w-xl text-lg leading-relaxed" style="color: var(--muted);">
-        {ONE_LINER}
-      </p>
-      <div data-reveal-item class="mt-9 flex flex-wrap items-center justify-center gap-4">
-        <a
-          href="/contact/"
-          data-magnetic
-          class="ripple focus-ring press-feedback rounded-full px-6 py-3 text-sm font-semibold"
-          style="background: var(--btn-bg); color: var(--btn-text);"
+    <div class="relative z-[1] mx-auto grid max-w-6xl items-center gap-10 px-4 pb-20 sm:px-6 sm:pb-24 lg:grid-cols-[1.05fr_1fr]">
+      <div data-reveal-group>
+        <p data-reveal-item class="hero-eyebrow">{TAGLINE}<span class="caret"></span></p>
+        <h1
+          data-reveal-item
+          class="mt-5 text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.08] font-semibold tracking-tight text-balance"
+          style="font-family: var(--font-display);"
         >
-          Start a project
-        </a>
-        <a
-          href="/portfolio/"
-          data-magnetic
-          class="ripple focus-ring press-feedback rounded-full border px-6 py-3 text-sm font-semibold"
-          style="border-color: var(--border); color: var(--text);"
-        >
-          See our work
-        </a>
+          Hardware. Software. Design.
+        </h1>
+        <p data-reveal-item class="mt-6 max-w-xl text-lg leading-relaxed" style="color: var(--hero-muted);">
+          {ONE_LINER}
+        </p>
+        <div data-reveal-item class="mt-9 flex flex-wrap items-center gap-4">
+          <a
+            href="/contact/"
+            data-magnetic
+            class="ripple focus-ring press-feedback rounded-full px-6 py-3 text-sm font-semibold"
+            style="background: linear-gradient(120deg, #2e7cff, #22c7d9); color: #fff; box-shadow: 0 0 24px 2px rgba(46,124,255,.35);"
+          >
+            Start a project
+          </a>
+          <a
+            href="/portfolio/"
+            data-magnetic
+            class="ripple focus-ring press-feedback rounded-full border px-6 py-3 text-sm font-semibold"
+            style="border-color: var(--hero-border); color: var(--hero-text);"
+          >
+            See our work
+          </a>
+        </div>
+      </div>
+
+      <div class="relative hidden justify-center lg:flex" data-reveal-item aria-hidden="true">
+        <div class="levitate relative flex items-center justify-center">
+          <span class="spotlight-glow" style="width:440px;height:440px;"></span>
+          <div data-tilt class="relative z-[1]">
+            <Image src={logo} width={272} height={218} alt="" class="h-[218px] w-auto drop-shadow-[0_30px_60px_rgba(46,124,255,0.35)]" />
+          </div>
+        </div>
       </div>
     </div>
+
+    <HeroTrace />
   </section>
 
   <!-- ===== SERVICES ===== -->

@@ -6,6 +6,7 @@
  */
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
 import { SERVICE_ICONS } from '../../lib/service-icons';
 
 export async function getStaticPaths() {
@@ -26,41 +27,35 @@ const next = allServices[(currentIndex + 1) % allServices.length];
 ---
 
 <BaseLayout title={title} description={summary}>
-  <section class="px-4 pt-16 pb-14 sm:px-6 sm:pt-20">
-    <div class="mx-auto max-w-3xl" data-reveal>
-      <a href="/services/" class="focus-ring text-xs font-semibold" style="color: var(--muted);">&larr; All services</a>
+  <PageHero eyebrow={coverage === 'india' ? 'India — on-site' : 'Worldwide'} accent={icon.accent} compact>
+    <a slot="pretext" href="/services/" class="focus-ring mb-6 inline-block text-xs font-semibold" style="color: var(--hero-muted);">&larr; All services</a>
 
-      <div class="mt-5 flex items-center gap-4">
-        <span
-          class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl"
-          style={`background: color-mix(in srgb, ${icon.accent} 14%, transparent); color: ${icon.accent};`}
-        >
-          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-8 w-8" set:html={icon.svg} />
-        </span>
-        <span
-          class="rounded-full px-2.5 py-1 text-[10px] font-semibold tracking-wide uppercase"
-          style={`background: color-mix(in srgb, ${icon.accent} 12%, transparent); color: ${icon.accent};`}
-        >
-          {coverage === 'india' ? 'India — on-site' : 'Worldwide'}
-        </span>
-      </div>
+    <div data-reveal-group>
+      <span
+        data-reveal-item
+        class="levitate mt-5 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl"
+        style={`background: color-mix(in srgb, ${icon.accent} 18%, transparent); color: ${icon.accent}; box-shadow: 0 0 26px 4px ${icon.accent}55;`}
+      >
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-8 w-8" set:html={icon.svg} />
+      </span>
 
-      <h1 class="mt-6 text-[clamp(1.9rem,4vw,2.75rem)] leading-[1.12] font-semibold tracking-tight text-balance" style="font-family: var(--font-display); color: var(--text);">
+      <h1 data-reveal-item class="mt-6 text-[clamp(1.9rem,4vw,2.75rem)] leading-[1.12] font-semibold tracking-tight text-balance" style="font-family: var(--font-display);">
         {title}
       </h1>
-      <p class="mt-3 text-lg" style="color: var(--accent-blue);">{tagline}</p>
-      <p class="mt-5 max-w-2xl text-base leading-relaxed" style="color: var(--muted);">{summary}</p>
+      <p data-reveal-item class="mt-3 text-lg" style={`color: ${icon.accent};`}>{tagline}</p>
+      <p data-reveal-item class="mt-5 max-w-2xl text-base leading-relaxed" style="color: var(--hero-muted);">{summary}</p>
 
       <a
+        data-reveal-item
         href="/contact/"
         data-magnetic
         class="ripple focus-ring press-feedback mt-8 inline-block rounded-full px-6 py-3 text-sm font-semibold"
-        style="background: var(--btn-bg); color: var(--btn-text);"
+        style="background: linear-gradient(120deg, #2e7cff, #22c7d9); color: #fff; box-shadow: 0 0 24px 2px rgba(46,124,255,.35);"
       >
         Start a project
       </a>
     </div>
-  </section>
+  </PageHero>
 
   <section class="px-4 pb-16 sm:px-6" style="background: var(--surface);">
     <div class="mx-auto max-w-3xl py-16">
