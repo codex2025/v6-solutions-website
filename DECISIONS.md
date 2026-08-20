@@ -211,7 +211,7 @@ All 24 routes now build (`0 errors, 0 warnings, 0 hints`):
 - [ ] Business email address, Web3Forms/Formspree key — blocks a live Contact form.
 - [ ] Founders #2-6 — each needs one markdown file (`FOUNDER-PORTFOLIOS.md`).
 - [ ] Founder headshots.
-- [ ] Context7 + GitHub MCP not connected; private GitHub repo and Cloudflare Pages project not created — **nothing built so far is live.**
+- [x] ~~Context7 + GitHub MCP not connected; private GitHub repo and Cloudflare Pages project not created~~ — GitHub repo done, see Phase 4 below. Context7 MCP still not connected (low priority — hasn't blocked anything). Cloudflare Pages still needs the founder's own login (2026-08-20).
 - [ ] `CLAUDE.md` rename + amendment for decision 1.6.
 - [ ] Terms/Privacy real legal text; Udyam/MSME registration number once issued.
 - [ ] Typography (2.5) and per-service icon/motif choices (3.1's sibling for the other 7 services) are Claude Code's picks, not yet founder-reviewed.
@@ -267,3 +267,39 @@ follow-up instructions in the same message.
 - "customize it uniquely for respective pages" was honoured through colour/motif variation (per-service icons, per-project accent colours, six founder nodes, ping rings) within one shared structural system, not fully bespoke per-page 3D scenes — a deliberate scope call under time pressure, not silently under-delivered. Worth naming to the founder as the interpretation taken, in case they pictured something more elaborate per page.
 - IC Tester's own chip 3D scene (decision 3.1) is now restyled into the new hero-band system but was not otherwise revisited.
 - Typography (2.5) is still the same unreviewed IBM Plex Mono/Sans pick, now carried through a third visual iteration.
+
+---
+
+## Phase 4 — Deployment
+
+**Date:** 2026-08-20
+**Trigger:** Founder: "deploy this."
+
+### Decisions
+
+| # | Decision | Choice | Notes |
+|---|---|---|---|
+| 4.1 | **GitHub account** | **`codex2025`** | Two GitHub accounts were authenticated via `gh` CLI on this machine (`cyberambi`, active, and `codex2025`). Asked directly rather than assuming — founder picked `codex2025`. `gh auth switch` was used to make it active before repo creation. |
+| 4.2 | **Cloudflare Pages connection method** | **Founder connects it themselves via the Cloudflare dashboard**, not `wrangler login` from this session. | Claude Code has no Cloudflare credentials and — per the prohibition on entering credentials/creating accounts on the founder's behalf — cannot and should not obtain them. Also the better architecture: dashboard "Connect to Git" gives auto-deploy-on-push (decision 1.3's original plan) for free, vs. this session running one-off `wrangler pages deploy` commands forever. |
+
+### What was done
+
+- Created **`codex2025/v6-solutions-website`** on GitHub — **private**, matching decision 1.2. `gh repo create --source=. --remote=origin`.
+- Pushed `master` (all 8 local commits at the time, Phase 1 through Phase 3.6). Verified after push: repo is actually private, and `node_modules`/`dist`/`.env` are not in the tracked tree (71 files, all source).
+- Added `.nvmrc` (`22.12.0`) — Cloudflare Pages reads this automatically to pick its Node runtime; without it, a deploy could build on a Cloudflare default Node version older than package.json's `engines.node: >=22.12.0` requirement and fail or behave unpredictably.
+
+### What the founder still needs to do — exact Cloudflare Pages settings
+
+1. Log into Cloudflare → **Workers & Pages** → **Create application** → **Pages** → **Connect to Git**.
+2. Pick **`codex2025/v6-solutions-website`** (Cloudflare will ask for GitHub App access to that repo/account — that's the founder's GitHub authorization to give, not something done here).
+3. Build settings:
+   - **Framework preset:** Astro
+   - **Build command:** `npm run build`
+   - **Build output directory:** `dist`
+4. **Project name must be exactly `v6solutions`** — `src/config/site.ts`'s `SITE_URL` is already hardcoded to `https://v6solutions.pages.dev` (decision 1.4), and Cloudflare Pages' free subdomain is always `<project-name>.pages.dev`. A different project name here would make canonical URLs, the sitemap, and Open Graph tags all point to a URL that doesn't resolve.
+5. No environment variables are required — the site is fully static, no API keys, no secrets.
+6. Once `v6solutions.in` is purchased (decision 1.4, still pending), add it as a custom domain in the same Pages project settings, then flip the commented-out line in `src/config/site.ts` to the real domain — that one-line change was the whole point of centralising `SITE_URL`.
+
+### Still not live until the founder completes the steps above
+
+Everything is built, committed, and pushed — but the site is **not yet reachable at any public URL** until Cloudflare Pages is connected. No claim is made otherwise.
