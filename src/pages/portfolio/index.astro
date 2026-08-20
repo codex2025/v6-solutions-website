@@ -1,6 +1,6 @@
 ---
 /**
- * Portfolio index — light theme per decision 2.6.
+ * Portfolio index.
  *
  * Real projects only (CLAUDE.md: never invent a client or a project). The
  * four entries here are founder Shyamalan V's own personal/academic work,
@@ -25,7 +25,7 @@ const cards = await Promise.all(
 const description = `Real work from ${BRAND} — client projects publish here once cleared to share.`;
 ---
 
-<BaseLayout title="Portfolio" description={description} theme="light">
+<BaseLayout title="Portfolio" description={description}>
   <section class="px-4 pt-16 pb-14 sm:px-6 sm:pt-20">
     <div class="mx-auto max-w-6xl" data-reveal>
       <p class="text-xs font-semibold tracking-[0.2em] uppercase" style="color: var(--accent-cyan);">Portfolio</p>

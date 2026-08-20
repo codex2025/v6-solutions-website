@@ -1,15 +1,13 @@
 @import "tailwindcss";
 
 /*
- * Design tokens — decisions 2.5, 2.6 (DECISIONS.md § Phase 2).
+ * Design tokens — decisions 2.5, 2.11 (DECISIONS.md § Phase 2).
  *
  * Colours are sampled directly from public/logos/ (not eyeballed): the brand
- * gradient runs royal blue -> cyan -> lime green, lockup background is navy.
+ * gradient runs royal blue -> cyan -> lime green.
  *
- * `data-page-theme` is a PER-PAGE BRAND CHOICE, set explicitly by BaseLayout's
- * `theme` prop (decision 2.6 — split by page type). It has nothing to do with
- * the visitor's OS light/dark preference — do not wire this to
- * prefers-color-scheme. Founder portfolio pages (decision 1.17) carry their
+ * Decision 2.11 amends 2.6: ONE consistent light theme site-wide, no
+ * per-page switching. Founder portfolio pages (decision 1.17) carry their
  * own independent palette in portfolio.css and never read these tokens.
  */
 
@@ -24,32 +22,11 @@
 }
 
 :root {
-  /* True brand gradient — decorative use only (logo, thin accent bars, the
-     hero's 3D scene). Not guaranteed AA-contrast as text; see --grad-text
-     inside each theme block for the text-safe, per-surface tuned version. */
+  /* True brand gradient — decorative use only (logo, thin accent bars).
+     Not guaranteed AA-contrast as text; see --grad-text below for the
+     text-safe, light-surface-tuned version. */
   --grad-solid: linear-gradient(120deg, #014af0, #03adc1, #84f660);
-}
 
-[data-page-theme='dark'] {
-  --bg: #010717;
-  --surface: #0b1428;
-  --surface-raised: #101c38;
-  --text: #f4f6f8;
-  --muted: #93a0bc;
-  --border: #1b2540;
-  --grid-line: rgba(255, 255, 255, 0.045);
-
-  --accent-blue: #2e7cff;
-  --accent-cyan: #22c7d9;
-  --accent-lime: #8ff56a;
-  --grad-text: linear-gradient(120deg, #4c8cff, #3cd3e4, #9cfa7c);
-  --btn-bg: #2e7cff;
-  --btn-bg-hover: #1a63e0;
-  --btn-text: #ffffff;
-  --focus-ring: #5c93ff;
-}
-
-[data-page-theme='light'] {
   --bg: #f5f7fa;
   --surface: #ffffff;
   --surface-raised: #eff2f6;

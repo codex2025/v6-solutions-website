@@ -216,3 +216,24 @@ All 24 routes now build (`0 errors, 0 warnings, 0 hints`):
 - [ ] Terms/Privacy real legal text; Udyam/MSME registration number once issued.
 - [ ] Typography (2.5) and per-service icon/motif choices (3.1's sibling for the other 7 services) are Claude Code's picks, not yet founder-reviewed.
 - [ ] Service copy (tagline/summary/deliverables/process/faq for all 8) is a first draft.
+
+---
+
+## Phase 3.5 — Founder review of the live build
+
+**Date:** 2026-08-20
+**Trigger:** Founder reviewed the site running on localhost and gave direct feedback: strong
+dissatisfaction with Home specifically, the per-page dark/light switching "irritates," the Home
+hero's 3D scene is "the worst," and the header logo wasn't rendering fully.
+
+| # | Decision | Choice | Notes |
+|---|---|---|---|
+| 2.11 | ⚠️ **Amends decision 2.6.** **One consistent light theme, site-wide.** | No more per-page dark/light split. Every page — including the four that were dark (Home, About, Products, IC Tester) — now renders on the same light tokens Services/Portfolio/Team/Contact already used. `BaseLayout`'s `theme` prop and `[data-page-theme]` CSS are removed entirely; `global.css` now defines one token set directly on `:root`. | Founder's own words: "dual themed page, switching between the themes irritates." Asked directly whether that meant a visitor-controlled toggle or one fixed theme — founder chose **one fixed theme, light**. |
+| 2.12 | **Home's hero 3D scene removed.** | The procedural six-node Three.js scene is gone from `/`. Hero is now a single centered text block (tagline, heading, subhead, two CTAs) — no replacement visual. `src/three/scene.ts`'s `'nodes'` scene code is unused now but left in place in case a future page wants it; nothing imports it. | Founder: "the 3d model you used in the home page is worst, kindly remove it." Scoped to Home only — the IC Tester page's separate chip scene (`'chip'` kind) was not mentioned and was left as-is; flagged to the founder as something to call out too if it lands the same way. |
+| 2.13 | **Fixed: header/footer logo was being cropped, not just small.** | Real bug, not a design opinion — `public`/`src/assets/logos/v6-icon.png` is 1402×1122 (5:4), and both `Header.astro` and `Footer.astro` forced it into an exact square (`width={30} height={30}` / `width={28} height={28}`), which crops part of the "6" loop off under Astro's image service. Fixed by passing proportional width/height (35×28 header, 33×26 footer) with `w-auto` sizing so nothing gets cropped or stretched. | Founder: "the company logo is not fully visible." Confirmed by rendering and zooming into the actual header before and after — this was not a subjective read, the shape was genuinely cut off. |
+
+### What's still open from this feedback
+
+- Founder said "worst design I've ever seen" / "I don't like the home page itself" as a general statement, broader than the three concrete items above. Decisions 2.11–2.13 address the specific, actionable parts of that feedback; whether the founder wants a more fundamental rework of Home's layout/copy/typography beyond these fixes is still an open question — surfaced back to them rather than guessed at.
+- The IC Tester page still has its own procedural 3D scene (decision 3.1) — left in place since it wasn't named, but the founder may want it gone too given the Home scene's reception.
+- Typography (2.5) is still provisional and unreviewed by the founder — the same IBM Plex Mono/Sans pick that shipped with the disliked Home page. Worth confirming explicitly now rather than assuming it survived the "worst design" verdict.

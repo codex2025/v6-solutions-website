@@ -21,15 +21,9 @@ interface Props {
    */
   chrome?: boolean;
   noindex?: boolean;
-  /**
-   * Decision 2.6 — split by page type. A fixed, per-page brand choice, not a
-   * response to the visitor's OS light/dark preference. Home / About /
-   * Products pass 'dark'; Services / Portfolio / Team / Contact pass 'light'.
-   */
-  theme?: 'dark' | 'light';
 }
 
-const { title, description, chrome = true, noindex = false, theme = 'light' } = Astro.props;
+const { title, description, chrome = true, noindex = false } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, SITE_URL).href;
 const pageTitle = title === BRAND ? BRAND : `${title} — ${BRAND}`;
@@ -69,7 +63,7 @@ const pageTitle = title === BRAND ? BRAND : `${title} — ${BRAND}`;
     <meta name="generator" content={Astro.generator} />
   </head>
 
-  <body data-page-theme={theme} class="flex min-h-screen flex-col antialiased">
+  <body class="flex min-h-screen flex-col antialiased">
     <a
       href="#main"
       class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:px-4 focus:py-2"

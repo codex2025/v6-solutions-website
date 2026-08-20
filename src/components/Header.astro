@@ -1,11 +1,10 @@
 ---
 /**
- * Header — Phase 2 build (decisions 2.5, 2.6, 2.7, 2.8).
+ * Header — Phase 2 build (decisions 2.5, 2.7, 2.8, 2.11).
  *
- * Theme-aware: reads the ambient `--bg` / `--text` / `--accent-blue` tokens
- * set by BaseLayout's `data-page-theme` on <body> (decision 2.6 — split by
- * page type). Never hardcode a colour here; every page that includes this
- * component supplies its own theme via those tokens.
+ * Reads the global `--bg` / `--text` / `--accent-blue` tokens from
+ * global.css (decision 2.11 — one consistent light theme site-wide, no
+ * per-page switching). Never hardcode a colour here.
  *
  * Mobile menu still uses <details>/<summary> — works with JavaScript
  * disabled, matching the CSS-only lite tier (decision 2.8).
@@ -25,7 +24,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
       class="ripple focus-ring flex items-center gap-2.5 rounded-sm px-1 py-1"
       style="color: var(--text);"
     >
-      <Image src={icon} width={30} height={30} alt="" class="h-[30px] w-[30px]" />
+      <Image src={icon} width={35} height={28} alt="" class="h-7 w-auto" />
       <span class="text-[15px] font-semibold tracking-tight" style="font-family: var(--font-display);">{BRAND}</span>
     </a>
 
