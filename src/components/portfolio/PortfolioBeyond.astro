@@ -1,0 +1,85 @@
+---
+/**
+ * Beyond the code + education. Second inverted "paper" band, mirroring About
+ * so the page reads dark → light → dark → light rather than one long dark scroll.
+ */
+interface Props {
+  beyond: {
+    quads: { title: string; tag: string; accent: string; desc: string }[];
+    education: {
+      degree: string;
+      specialisation?: string;
+      institution: string;
+      period: string;
+      highlight?: string;
+      columns: { title: string; accent: string; items: string[] }[];
+    };
+  };
+}
+
+const { beyond } = Astro.props;
+const { education } = beyond;
+---
+
+<section class="pf-section pf-paper" id="beyond">
+  <div class="pf-watermark" aria-hidden="true">BEYOND</div>
+
+  <div class="pf-wrap" style="position:relative;z-index:1">
+    <p class="pf-eyebrow">Beyond the Code</p>
+    <h2 class="pf-h2 pf-reveal">Wider <span style="color:#1d4ed8">Interests</span></h2>
+
+    <div class="pf-card-grid" style="margin-top:3rem">
+      {
+        beyond.quads.map((q) => (
+          <article class="pf-quad pf-reveal">
+            <span class="pf-tag" style={`--card-accent:${q.accent}`}>
+              {q.tag}
+            </span>
+            <h3>{q.title}</h3>
+            <p>{q.desc}</p>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<section class="pf-section" id="education" style="background:var(--pf-bg)">
+  <div class="pf-wrap">
+    <p class="pf-eyebrow">Education</p>
+    <h2 class="pf-h2 pf-reveal">Academic <span class="pf-grad">Foundation</span></h2>
+
+    <div class="pf-degree pf-reveal" style="margin-top:2.5rem">
+      <div class="pf-pill-row">
+        <span class="pf-pill">{education.period}</span>
+        {education.highlight && <span class="pf-pill pf-pill-alt">{education.highlight}</span>}
+      </div>
+      <h3>{education.degree}</h3>
+      {
+        education.specialisation && (
+          <p style="font-family:var(--pf-font-mono);font-size:0.8rem;color:var(--pf-accent2);margin-top:0.4rem">
+            {education.specialisation}
+          </p>
+        )
+      }
+      <p style="font-family:var(--pf-font-mono);font-size:0.75rem;color:var(--pf-muted);margin-top:0.5rem">
+        {education.institution}
+      </p>
+    </div>
+
+    <div class="pf-card-grid" style="margin-top:0">
+      {
+        education.columns.map((col) => (
+          <div class="pf-edu-col pf-reveal" style={`--card-accent:${col.accent}`}>
+            <h4>{col.title}</h4>
+            <ul class="pf-list" style="margin:0">
+              {col.items.map((t) => (
+                <li>{t}</li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,55 @@
+---
+/**
+ * Awards & recognition — horizontal snap rail, same pattern as Work.
+ */
+interface Props {
+  awards: {
+    id: string;
+    title: string;
+    org: string;
+    location: string;
+    date: string;
+    badge: string;
+    accent: string;
+    desc: string;
+    impactPoints: string[];
+  }[];
+}
+
+const { awards } = Astro.props;
+---
+
+<section class="pf-section" id="awards" style="background:var(--pf-bg);border-top:1px solid var(--pf-line)">
+  <div class="pf-orb" style="top:50%;right:18%;translate:0 -50%;width:min(32rem,60vw);aspect-ratio:1;background:color-mix(in srgb,var(--pf-accent3) 14%,transparent)"></div>
+
+  <div class="pf-wrap" style="position:relative;z-index:1">
+    <p class="pf-eyebrow">Honors &amp; Recognition</p>
+    <h2 class="pf-h2 pf-reveal">Awards &amp; <span class="pf-grad">Achievements</span></h2>
+    <p class="pf-rail-hint">Scroll the rail &rarr;</p>
+  </div>
+
+  <div class="pf-rail" style="position:relative;z-index:1" tabindex="0" role="region" aria-label="Awards, horizontally scrollable">
+    {
+      awards.map((a) => (
+        <article class="pf-award" style={`--card-accent:${a.accent}`}>
+          <span class="pf-tag">{a.badge}</span>
+          <h3>{a.title}</h3>
+          <p class="pf-award-meta">
+            {a.org}
+            <br />
+            {a.location} &middot; {a.date}
+          </p>
+          <p class="pf-award-desc">{a.desc}</p>
+
+          {a.impactPoints.length > 0 && (
+            <ul class="pf-list">
+              {a.impactPoints.map((p) => (
+                <li>{p}</li>
+              ))}
+            </ul>
+          )}
+        </article>
+      ))
+    }
+  </div>
+</section>

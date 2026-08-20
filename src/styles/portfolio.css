@@ -1,0 +1,1241 @@
+/* ─────────────────────────────────────────────────────────────
+ * FOUNDER PORTFOLIO TEMPLATE
+ *
+ * Shared by all six founders. Every colour below reads from a CSS
+ * custom property set per-founder in PortfolioLayout.astro, so the
+ * same stylesheet produces six visually distinct portfolios.
+ *
+ * Scoped under .pf so it cannot leak into the company-brand pages —
+ * the site palette is still a Phase 2 decision and must stay untouched.
+ *
+ * JS COST: ZERO. Reveals use CSS scroll-driven animations, marquees use
+ * keyframes, expandable panels use native <details>. Nothing hydrates.
+ * ───────────────────────────────────────────────────────────── */
+
+.pf {
+  /* Ink — the constant across all founders */
+  --pf-bg: #03060f;
+  --pf-bg2: #050b18;
+  --pf-bg3: #050a14;
+  --pf-surface: #0a1628;
+  --pf-panel: #0f2347;
+  --pf-white: #f5f5f0;
+  --pf-muted: #8fa0b8;
+  --pf-line: rgba(255, 255, 255, 0.08);
+
+  /* --pf-accent / --pf-accent2 / --pf-accent3 / --pf-paper / --pf-paper2
+     are injected inline per founder. */
+
+  background: var(--pf-bg);
+  color: var(--pf-white);
+  font-family: var(--pf-font-body);
+  overflow-x: hidden;
+}
+
+.pf *,
+.pf *::before,
+.pf *::after {
+  box-sizing: border-box;
+}
+
+.pf h1,
+.pf h2,
+.pf h3,
+.pf h4 {
+  font-family: var(--pf-font-display);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 0.92;
+  margin: 0;
+}
+
+.pf p {
+  margin: 0;
+}
+
+.pf a {
+  color: inherit;
+}
+
+/* Visible keyboard focus — CLAUDE.md requires it site-wide. */
+.pf a:focus-visible,
+.pf button:focus-visible,
+.pf summary:focus-visible {
+  outline: 2px solid var(--pf-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ── Layout primitives ─────────────────────────────────────── */
+.pf-wrap {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 3rem);
+}
+
+.pf-section {
+  position: relative;
+  padding-block: clamp(4.5rem, 10vw, 8rem);
+  overflow: hidden;
+  /* The nav is fixed, so an anchor jump would otherwise drop the section
+     heading underneath it. Keeps #work, #stack etc. landing in clear space. */
+  scroll-margin-top: 5rem;
+}
+
+.pf-eyebrow {
+  font-family: var(--pf-font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: var(--pf-accent2);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.pf-eyebrow::before {
+  content: '';
+  width: 1.75rem;
+  height: 1px;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.pf-h2 {
+  font-size: clamp(2.75rem, 8vw, 5.5rem);
+  color: var(--pf-white);
+}
+
+.pf-grad {
+  background: linear-gradient(135deg, var(--pf-accent) 0%, var(--pf-accent2) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.pf-lede {
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  color: var(--pf-muted);
+  line-height: 1.65;
+  max-width: 42rem;
+  margin-top: 1rem;
+}
+
+/* Giant low-opacity watermark type. Decorative — always aria-hidden. */
+.pf-watermark {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  translate: 0 -50%;
+  font-family: var(--pf-font-display);
+  font-size: 22vw;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Blurred ambient light. Pure CSS — no images, no canvas. */
+.pf-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(140px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pf-glass {
+  background: color-mix(in srgb, var(--pf-panel) 55%, transparent);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--pf-line);
+}
+
+/* ── Scroll reveals ────────────────────────────────────────────
+ * Progressive enhancement, deliberately layered:
+ *   • no support        → content is simply visible
+ *   • reduced motion    → content is simply visible
+ *   • support + motion  → animates as it scrolls into view
+ * Content is NEVER hidden by default, so nothing can strand it. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .pf-reveal {
+      animation: pf-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 28%;
+    }
+
+    .pf-reveal-x {
+      animation: pf-slide-x linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 30%;
+    }
+
+    /* The growing trunk on the experience timeline. */
+    .pf-trunk-fill {
+      animation: pf-grow linear both;
+      animation-timeline: view();
+      animation-range: entry 40% cover 70%;
+      transform-origin: top;
+    }
+  }
+}
+
+@keyframes pf-rise {
+  from {
+    opacity: 0;
+    translate: 0 2.5rem;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes pf-slide-x {
+  from {
+    opacity: 0;
+    translate: -1.5rem 0;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes pf-grow {
+  from {
+    scale: 1 0;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+
+/* ── Navigation ────────────────────────────────────────────── */
+.pf-nav {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 60;
+  max-width: calc(100vw - 2rem);
+}
+
+.pf-nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem;
+  border-radius: 999px;
+  background: rgba(6, 13, 30, 0.72);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--pf-line);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.pf-nav-inner::-webkit-scrollbar {
+  display: none;
+}
+
+.pf-nav a {
+  flex-shrink: 0;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  font-family: var(--pf-font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pf-muted);
+  text-decoration: none;
+  transition: color 0.25s, background-color 0.25s;
+  white-space: nowrap;
+}
+
+.pf-nav a:hover {
+  color: var(--pf-white);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.pf-nav a.pf-nav-home {
+  color: var(--pf-accent);
+}
+
+/* ── Hero ──────────────────────────────────────────────────── */
+.pf-hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding-block: clamp(6rem, 14vh, 9rem) clamp(3rem, 8vh, 5rem);
+  background: radial-gradient(
+    ellipse 80% 80% at 50% -10%,
+    color-mix(in srgb, var(--pf-accent) 22%, #061124) 0%,
+    #061124 45%,
+    var(--pf-bg) 100%
+  );
+}
+
+.pf-hero-grid {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  gap: clamp(2rem, 5vw, 3rem);
+  align-items: center;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 64rem) {
+  .pf-hero-grid {
+    grid-template-columns: 1.05fr 0.95fr;
+  }
+}
+
+.pf-hero-name {
+  font-size: clamp(4.25rem, 15vw, 9rem);
+  line-height: 0.86;
+  letter-spacing: 0.03em;
+  color: var(--pf-white);
+}
+
+.pf-hero-roles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.85rem;
+  margin-top: 1.25rem;
+  padding-block: 0.85rem;
+  border-block: 1px solid var(--pf-line);
+  font-family: var(--pf-font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--pf-white);
+}
+
+.pf-hero-roles span[aria-hidden] {
+  color: var(--pf-accent);
+}
+
+.pf-hero-statement {
+  margin-top: 1.5rem;
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--pf-muted);
+  max-width: 34rem;
+}
+
+.pf-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 2rem;
+}
+
+.pf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 2rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: scale 0.25s, background-color 0.25s, border-color 0.25s;
+}
+
+.pf-btn-primary {
+  color: #fff;
+  background: linear-gradient(135deg, var(--pf-accent) 0%, var(--pf-accent2) 100%);
+  box-shadow: 0 0 32px color-mix(in srgb, var(--pf-accent) 40%, transparent);
+}
+
+.pf-btn-ghost {
+  color: var(--pf-white);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.pf-btn-ghost:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pf-btn:hover {
+    scale: 1.04;
+  }
+}
+
+/* Portrait
+ *
+ * The supplied portraits are low-key cutouts flattened onto BLACK, so on a
+ * #03060F hero they disappear without help. Three things rescue the silhouette,
+ * matching what the source portfolio did: a wide two-colour back-glow, a mild
+ * contrast lift, and a solid name card anchoring the base of the figure.
+ * Do not remove the glow — the photo becomes invisible without it. */
+.pf-portrait {
+  position: relative;
+  justify-self: center;
+  width: min(100%, 30rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pf-portrait-glow {
+  position: absolute;
+  left: 50%;
+  bottom: 22%;
+  translate: -50% 0;
+  width: 78%;
+  aspect-ratio: 3 / 4;
+  border-radius: 50%;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--pf-accent) 55%, transparent) 0%,
+    color-mix(in srgb, var(--pf-accent2) 38%, transparent) 45%,
+    transparent 100%
+  );
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pf-portrait-frame {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: clamp(21rem, 46vh, 31rem);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.pf-portrait-frame img {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: bottom;
+  /* Lifts the subject off the black it was flattened onto. */
+  filter: contrast(1.08) brightness(1.04) drop-shadow(0 25px 50px rgba(0, 0, 0, 0.9));
+}
+
+.pf-portrait-card {
+  position: relative;
+  z-index: 2;
+  margin-top: -1.15rem;
+  width: min(100%, 22rem);
+  padding: 0.85rem 1.5rem;
+  text-align: center;
+  border-radius: 1rem;
+  background: rgba(3, 6, 15, 0.9);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+
+.pf-portrait-card .pf-portrait-name {
+  font-family: var(--pf-font-display);
+  font-size: clamp(1.5rem, 3.5vw, 1.9rem);
+  letter-spacing: 0.14em;
+  line-height: 1;
+  color: var(--pf-white);
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.35);
+}
+
+.pf-portrait-card .pf-portrait-badge {
+  margin-top: 0.4rem;
+  font-family: var(--pf-font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--pf-accent2);
+}
+
+.pf-initials {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  width: min(100%, 20rem);
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--pf-accent) 30%, var(--pf-surface)),
+    var(--pf-surface)
+  );
+  border: 1px solid var(--pf-line);
+  font-family: var(--pf-font-display);
+  font-size: clamp(4rem, 12vw, 7rem);
+  color: var(--pf-white);
+}
+
+/* ── Paper (inverted cream) sections ───────────────────────── */
+.pf-paper {
+  background: linear-gradient(180deg, var(--pf-paper) 0%, var(--pf-paper2) 100%);
+  color: #171614;
+  border-radius: 2.5rem 2.5rem 0 0;
+  margin-top: -2.5rem;
+  z-index: 10;
+}
+
+.pf-paper .pf-eyebrow {
+  color: #3d8361;
+}
+
+.pf-paper h2,
+.pf-paper h3 {
+  color: #171614;
+}
+
+.pf-paper .pf-watermark {
+  color: rgba(0, 0, 0, 0.045);
+}
+
+.pf-about-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 2rem;
+  padding-left: 1.1rem;
+  border-left: 4px solid rgba(23, 22, 20, 0.1);
+}
+
+.pf-about-lines span {
+  font-family: var(--pf-font-display);
+  font-size: clamp(1.9rem, 5vw, 3rem);
+  letter-spacing: 0.04em;
+}
+
+.pf-card-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 4rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+}
+
+/* Grid items sized by their own content, not stretched to the tallest in the
+   row. Required wherever collapsible <details> share a row — without it, a
+   closed panel inflates to match an open sibling and reads as an empty box. */
+.pf-grid-start {
+  align-items: start;
+}
+
+.pf-chapter {
+  position: relative;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.pf-chapter-num {
+  position: absolute;
+  top: -0.75rem;
+  right: 0.25rem;
+  font-family: var(--pf-font-display);
+  font-size: 5.5rem;
+  color: rgba(0, 0, 0, 0.06);
+  user-select: none;
+}
+
+.pf-chapter-rule {
+  width: 2rem;
+  height: 4px;
+  border-radius: 999px;
+  margin-bottom: 1.4rem;
+}
+
+.pf-chapter h3 {
+  font-size: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.pf-chapter p {
+  color: #55524d;
+  line-height: 1.65;
+}
+
+/* ── Horizontal rails (work / awards) ──────────────────────── */
+.pf-rail {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-block: 0.5rem 2rem;
+  padding-inline: clamp(1.25rem, 4vw, 3rem);
+  scrollbar-width: thin;
+  scrollbar-color: var(--pf-accent) transparent;
+}
+
+.pf-rail::-webkit-scrollbar {
+  height: 6px;
+}
+
+.pf-rail::-webkit-scrollbar-thumb {
+  background: var(--pf-accent);
+  border-radius: 999px;
+}
+
+.pf-rail > * {
+  scroll-snap-align: start;
+  flex: 0 0 auto;
+}
+
+.pf-work-card {
+  position: relative;
+  width: min(88vw, 25rem);
+  padding: 2rem;
+  border-radius: 1.75rem;
+  background: linear-gradient(145deg, #09172e 0%, #061021 100%);
+  border: 1px solid var(--pf-line);
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.3s, translate 0.3s;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pf-work-card:hover,
+  .pf-work-card:focus-within {
+    translate: 0 -6px;
+  }
+}
+
+.pf-work-card:hover,
+.pf-work-card:focus-within {
+  border-color: color-mix(in srgb, var(--card-accent) 55%, transparent);
+}
+
+.pf-work-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.pf-work-id {
+  font-family: var(--pf-font-display);
+  font-size: 3rem;
+  line-height: 1;
+  color: color-mix(in srgb, var(--card-accent) 45%, transparent);
+}
+
+.pf-tag {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-family: var(--pf-font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--card-accent);
+  background: color-mix(in srgb, var(--card-accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--card-accent) 35%, transparent);
+}
+
+.pf-work-card h3 {
+  font-size: 2.25rem;
+  color: var(--pf-white);
+}
+
+.pf-work-sub {
+  font-family: var(--pf-font-mono);
+  font-size: 0.72rem;
+  color: var(--card-accent);
+  margin-top: 0.3rem;
+}
+
+.pf-work-desc {
+  margin-top: 1rem;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--pf-muted);
+}
+
+.pf-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.25rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.pf-list li {
+  position: relative;
+  padding-left: 1.1rem;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--pf-muted);
+}
+
+.pf-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 50%;
+  background: var(--card-accent, var(--pf-accent));
+}
+
+.pf-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--pf-line);
+}
+
+.pf-chip {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-family: var(--pf-font-mono);
+  font-size: 0.65rem;
+  color: var(--pf-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--pf-line);
+}
+
+.pf-work-link {
+  margin-top: 1.25rem;
+  font-family: var(--pf-font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--card-accent);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pf-work-link:hover {
+  text-decoration: underline;
+}
+
+.pf-rail-hint {
+  font-family: var(--pf-font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pf-muted);
+  margin-top: 0.5rem;
+}
+
+/* ── Experience timeline ───────────────────────────────────── */
+.pf-timeline {
+  position: relative;
+  margin-top: 4rem;
+  padding-left: 2.5rem;
+}
+
+.pf-trunk {
+  position: absolute;
+  left: 0.55rem;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+
+.pf-trunk-fill {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--pf-accent), var(--pf-accent2), var(--pf-accent3));
+}
+
+.pf-node {
+  position: relative;
+  padding-bottom: 3rem;
+}
+
+.pf-node:last-child {
+  padding-bottom: 0;
+}
+
+.pf-node::before {
+  content: '';
+  position: absolute;
+  left: -2.5rem;
+  top: 0.45rem;
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 50%;
+  background: var(--pf-bg);
+  border: 3px solid var(--node-accent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--node-accent) 55%, transparent);
+}
+
+.pf-node-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+}
+
+.pf-node h3 {
+  font-size: 1.9rem;
+  color: var(--pf-white);
+}
+
+.pf-node-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  margin-top: 0.5rem;
+  font-family: var(--pf-font-mono);
+  font-size: 0.72rem;
+  color: var(--pf-muted);
+}
+
+.pf-node-meta strong {
+  color: var(--node-accent);
+  font-weight: 500;
+}
+
+/* ── Stack: marquee + categories ───────────────────────────── */
+.pf-marquee {
+  position: relative;
+  overflow: hidden;
+  padding-block: 0.5rem;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.pf-marquee-track {
+  display: flex;
+  gap: 0.85rem;
+  width: max-content;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pf-marquee-track {
+    animation: pf-marquee-l 34s linear infinite;
+  }
+
+  .pf-marquee-track[data-dir='right'] {
+    animation-name: pf-marquee-r;
+  }
+
+  .pf-marquee:hover .pf-marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+/* Reduced motion: no scroll, just wrap the badges so all stay reachable. */
+@media (prefers-reduced-motion: reduce) {
+  .pf-marquee {
+    mask-image: none;
+  }
+
+  .pf-marquee-track {
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@keyframes pf-marquee-l {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: -50% 0;
+  }
+}
+
+@keyframes pf-marquee-r {
+  from {
+    translate: -50% 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+.pf-badge {
+  flex-shrink: 0;
+  padding: 0.55rem 1.15rem;
+  border-radius: 999px;
+  font-family: var(--pf-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  color: var(--badge-color);
+  background: color-mix(in srgb, var(--badge-color) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--badge-color) 32%, transparent);
+}
+
+.pf-cat {
+  border-radius: 1.25rem;
+  background: rgba(10, 22, 40, 0.6);
+  border: 1px solid var(--pf-line);
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+
+.pf-cat[open],
+.pf-cat:hover {
+  border-color: color-mix(in srgb, var(--cat-accent) 45%, transparent);
+}
+
+.pf-cat summary {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.35rem 1.6rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.pf-cat summary::-webkit-details-marker {
+  display: none;
+}
+
+.pf-cat-num {
+  font-family: var(--pf-font-mono);
+  font-size: 0.72rem;
+  color: var(--cat-accent);
+}
+
+.pf-cat summary h3 {
+  flex: 1;
+  font-size: 1.5rem;
+  color: var(--pf-white);
+}
+
+.pf-cat-chev {
+  color: var(--cat-accent);
+  transition: rotate 0.3s;
+  flex-shrink: 0;
+}
+
+.pf-cat[open] .pf-cat-chev {
+  rotate: 90deg;
+}
+
+.pf-cat-body {
+  padding: 0 1.6rem 1.6rem;
+}
+
+.pf-cat-desc {
+  font-size: 0.88rem;
+  color: var(--pf-muted);
+  line-height: 1.6;
+  margin-bottom: 1.35rem;
+}
+
+.pf-meter {
+  margin-bottom: 1rem;
+}
+
+.pf-meter-top {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--pf-font-mono);
+  font-size: 0.75rem;
+  margin-bottom: 0.4rem;
+}
+
+.pf-meter-top span:first-child {
+  color: var(--pf-white);
+}
+
+.pf-meter-top span:last-child {
+  color: var(--cat-accent);
+}
+
+.pf-meter-rail {
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+
+.pf-meter-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--cat-accent), color-mix(in srgb, var(--cat-accent) 45%, #fff));
+}
+
+/* ── Metrics ───────────────────────────────────────────────── */
+.pf-metric {
+  padding: 1.6rem;
+  border-radius: 1.5rem;
+  background: rgba(9, 22, 42, 0.9);
+  border: 1px solid var(--pf-line);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 11rem;
+}
+
+.pf-metric-label {
+  font-family: var(--pf-font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pf-muted);
+}
+
+.pf-metric-value {
+  font-family: var(--pf-font-display);
+  font-size: clamp(2.75rem, 7vw, 3.75rem);
+  line-height: 1;
+  margin-top: 0.6rem;
+  color: var(--metric-accent);
+}
+
+.pf-metric-value small {
+  font-family: var(--pf-font-mono);
+  font-size: 1rem;
+  color: var(--pf-muted);
+}
+
+.pf-metric-note {
+  margin-top: 1.25rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--pf-line);
+  font-family: var(--pf-font-mono);
+  font-size: 0.68rem;
+  color: var(--pf-muted);
+}
+
+/* ── Awards ────────────────────────────────────────────────── */
+.pf-award {
+  width: min(88vw, 26rem);
+  padding: 2rem;
+  border-radius: 1.75rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
+  border: 1px solid var(--pf-line);
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.3s;
+}
+
+.pf-award:hover,
+.pf-award:focus-within {
+  border-color: color-mix(in srgb, var(--card-accent) 55%, transparent);
+}
+
+.pf-award h3 {
+  font-size: 1.7rem;
+  color: var(--pf-white);
+  margin-top: 1.1rem;
+}
+
+.pf-award-meta {
+  font-family: var(--pf-font-mono);
+  font-size: 0.7rem;
+  color: var(--pf-muted);
+  margin-top: 0.5rem;
+  line-height: 1.7;
+}
+
+.pf-award-desc {
+  margin-top: 1rem;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--pf-muted);
+}
+
+/* ── Beyond / education ────────────────────────────────────── */
+.pf-quad {
+  padding: 1.75rem;
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.pf-quad h3 {
+  font-size: 1.55rem;
+  margin-block: 0.9rem 0.6rem;
+}
+
+.pf-quad p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #55524d;
+}
+
+.pf-degree {
+  padding: 2rem;
+  border-radius: 1.75rem;
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-line);
+  margin-bottom: 1.5rem;
+}
+
+.pf-degree h3 {
+  font-size: clamp(1.75rem, 4vw, 2.35rem);
+  color: var(--pf-white);
+  margin-top: 0.85rem;
+}
+
+.pf-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.pf-pill {
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-family: var(--pf-font-mono);
+  font-size: 0.65rem;
+  color: var(--pf-accent);
+  background: color-mix(in srgb, var(--pf-accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--pf-accent) 32%, transparent);
+}
+
+.pf-pill-alt {
+  color: var(--pf-accent2);
+  background: color-mix(in srgb, var(--pf-accent2) 12%, transparent);
+  border-color: color-mix(in srgb, var(--pf-accent2) 32%, transparent);
+}
+
+.pf-edu-col {
+  padding: 2rem;
+  border-radius: 1.5rem;
+  background: rgba(10, 22, 40, 0.6);
+  border: 1px solid var(--pf-line);
+}
+
+.pf-edu-col h4 {
+  font-size: 1.5rem;
+  color: var(--pf-white);
+  margin-bottom: 1.25rem;
+}
+
+/* ── Contact ───────────────────────────────────────────────── */
+.pf-contact-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 3rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+
+.pf-contact-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.35rem 1.6rem;
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--pf-line);
+  text-decoration: none;
+  font-family: var(--pf-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--pf-white);
+  transition: border-color 0.25s, background-color 0.25s;
+}
+
+.pf-contact-link:hover {
+  border-color: color-mix(in srgb, var(--pf-accent) 55%, transparent);
+  background: color-mix(in srgb, var(--pf-accent) 8%, transparent);
+}
+
+.pf-footer {
+  padding-block: 2.5rem;
+  border-top: 1px solid var(--pf-line);
+  text-align: center;
+  font-family: var(--pf-font-mono);
+  font-size: 0.7rem;
+  color: var(--pf-muted);
+}
+
+.pf-footer a {
+  color: var(--pf-accent);
+  text-decoration: none;
+}
+
+.pf-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ── Team index ────────────────────────────────────────────── */
+.pf-team-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 3rem;
+  align-items: start;
+  /* auto-FILL, not auto-fit: with only one founder published, auto-fit would
+     collapse the empty tracks and stretch that single card across the full
+     row. auto-fill keeps every card the same size no matter how many exist —
+     which is also the "no visual hierarchy" rule holding at 1 founder and 6. */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+}
+
+.pf-team-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.75rem;
+  border-radius: 1.5rem;
+  background: rgba(10, 22, 40, 0.6);
+  border: 1px solid var(--pf-line);
+  text-decoration: none;
+  transition: border-color 0.25s, translate 0.25s;
+}
+
+.pf-team-card:hover {
+  border-color: color-mix(in srgb, var(--pf-accent) 55%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pf-team-card:hover {
+    translate: 0 -4px;
+  }
+}
+
+.pf-team-card img,
+.pf-team-card .pf-initials {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  /* The portraits are full-body cutouts, so a centred square crop lands on the
+     torso and leaves the face jammed against the top edge. Anchoring to the top
+     puts the head near the middle of the circle instead. */
+  object-position: 50% 0%;
+  background: color-mix(in srgb, var(--pf-accent) 18%, var(--pf-surface));
+  margin-bottom: 1.1rem;
+}
+
+.pf-team-card .pf-initials {
+  font-size: 1.6rem;
+}
+
+.pf-team-card h2 {
+  font-size: 1.75rem;
+  color: var(--pf-white);
+}
+
+.pf-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

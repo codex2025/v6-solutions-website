@@ -57,6 +57,59 @@ Not founder decisions — recorded so nobody "corrects" these back later.
 | `trailingSlash: 'always'` | Matches Cloudflare Pages' default behaviour; avoids duplicate-URL SEO issues. |
 | Assumption to confirm in Phase 3 | CLAUDE.md lists `process[]` on services without specifying its shape. Built as `{ step, detail }`. Say if you want something else. |
 
+---
+
+## Phase 1.5 — Founder portfolios
+
+**Date:** 2026-08-16
+**Source:** founder direction, given directly (no question batch was run — the
+founder answered the integration question before it was asked).
+
+### Decisions
+
+| # | Decision | Choice | Notes |
+|---|---|---|---|
+| 1.14 | Founder portfolios | **Every founder gets a full portfolio page — same template, fully customised build per person** | Resolves the tension with CLAUDE.md's "all six are equal, no visual hierarchy": equality is preserved by giving everyone a portfolio, not by giving everyone a card. |
+| 1.15 | Shyamalan's portfolio | **Rebuilt in Astro from his Next.js repo** (`github.com/Shyamalan-21/Portfolio`) | Not embedded, not iframed, not linked out. Ported to the project's own stack. |
+| 1.16 | Portfolio implementation | **Zero-JS Astro components + per-founder markdown** | Verified: the built page ships **0 bytes of JavaScript**. See technical notes. |
+| 1.17 | Portfolio visual identity | **Separate from the company brand palette** | Each founder's portfolio carries their OWN accent colours, set per-file. The company palette remains an open Phase 2 decision and is untouched — `global.css` was not modified. |
+
+### What was built
+
+```
+src/content.config.ts                   founders schema + optional `portfolio` block
+src/content/founders/shyamalan-v.md     all of Shyamalan's content, one file
+src/content/founders/shyamalan-v.jpg    portrait (317kB → 11–35kB webp at build)
+src/styles/portfolio.css                the shared template stylesheet
+src/layouts/PortfolioLayout.astro       portfolio document shell + Person JSON-LD
+src/components/portfolio/*.astro        10 section components
+src/pages/team/[slug].astro             one page per founder with a portfolio
+src/pages/team/index.astro              team index
+```
+
+Adding founder #2 is **one markdown file**. No code changes. Sections render only
+when their data exists, so nobody gets an empty "Awards" band.
+
+### Technical notes from the build
+
+| Finding | Detail |
+|---|---|
+| **0 KB JavaScript** | Measured on the built output, not estimated. Scroll reveals use CSS `animation-timeline: view()`, marquees use keyframes, expandable skill panels use native `<details>`. Page weight: **45.8 KB HTML + ~29 KB CSS**. |
+| What was dropped from the source, and why | **Three.js hero** (~230KB+ JS vs a ~50KB site budget) → replaced with a CSS radial gradient, blurred orbs and an inline SVG constellation. **Custom `cursor: none`** → removed; it hid the pointer entirely if the script failed, against the Accessibility ≥ 95 target. **Contact form** → omitted; the original only simulated sending, and a form that silently discards messages is worse than none. Needs the Web3Forms/Formspree key first. |
+| **LeetCode stats are a dated snapshot** | The source proxied LeetCode's GraphQL through a Next.js route handler. `output: 'static'` has no server, and browser-side calls fail CORS. The page states "a snapshot, not a live feed — accurate as of August 2026" rather than implying live data. Restoring live data needs a Cloudflare Pages Function or a build-time fetch. |
+| Reveal animations are progressively enhanced | Layered so content is **never** hidden by default: no scroll-timeline support → visible; `prefers-reduced-motion` → visible; both present → animates. |
+| About-section text colours were darkened | The source's neon accents sat at ~2:1 contrast on the cream band. Darkened equivalents keep the hue relationships and pass WCAG AA. |
+| Shyamalan's personal email withheld | `samzshyam21@gmail.com` is public on his own site, but decision 1.13 sets "business email only" here. Contact falls back to GitHub / LinkedIn / LeetCode. |
+| Build status | `npm run build` → **0 errors, 0 warnings, 0 hints**. |
+
+### Open items from this phase
+
+- [ ] **Founder sign-off on Shyamalan's copy.** Every word is sourced from his own repo, but CLAUDE.md requires copy approval before it ships. Nothing here was invented.
+- [ ] **The other five founders** — each needs one markdown file. Same template.
+- [ ] **Headshots.** The portrait is a full-body cutout flattened onto black; it needs a strong back-glow to be visible at all, and it crops awkwardly into the round team-page avatar. A proper headshot would fix both.
+- [ ] **Mobile verified only by construction.** The layout uses `clamp()`/`min()`/auto-fill grids throughout and every overflow guard was confirmed in-browser, but the automation browser ran a fixed viewport, so a real 360px render was never seen. Check on a phone.
+- [ ] Decide whether the LeetCode numbers should become live via a Pages Function.
+
 ### Open items
 
 - [ ] **Business email address** — holding page currently says "Contact details coming shortly" rather than publishing a fake address. Supply it and `src/config/site.ts` turns it into a live mailto automatically.

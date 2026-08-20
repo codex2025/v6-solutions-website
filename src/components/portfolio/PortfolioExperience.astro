@@ -1,0 +1,76 @@
+---
+/**
+ * Experience — the "growing tree" timeline.
+ *
+ * The trunk grew via a framer-motion scroll transform. Reproduced with a CSS
+ * scroll-driven animation (.pf-trunk-fill), so it costs 0KB and degrades to a
+ * fully-drawn trunk where scroll timelines are unsupported.
+ */
+interface Props {
+  experience: {
+    title: string;
+    role: string;
+    company: string;
+    location: string;
+    period: string;
+    tag: string;
+    accent: string;
+    skills: string[];
+    responsibilities: string[];
+  }[];
+}
+
+const { experience } = Astro.props;
+---
+
+<section class="pf-section" id="experience" style="background:var(--pf-bg2);border-top:1px solid var(--pf-line)">
+  <div class="pf-orb" style="top:30%;left:8%;width:min(34rem,64vw);aspect-ratio:1;background:color-mix(in srgb,var(--pf-accent) 14%,transparent)"></div>
+
+  <div class="pf-wrap" style="position:relative;z-index:1">
+    <p class="pf-eyebrow">Growth Timeline</p>
+    <h2 class="pf-h2 pf-reveal">Experience <span class="pf-grad">Tree</span></h2>
+
+    <div class="pf-timeline">
+      <div class="pf-trunk" aria-hidden="true">
+        <div class="pf-trunk-fill"></div>
+      </div>
+
+      {
+        experience.map((n) => (
+          <article class="pf-node pf-reveal" style={`--node-accent:${n.accent}`}>
+            <div class="pf-node-head">
+              <h3>{n.title}</h3>
+              <span class="pf-tag" style={`--card-accent:${n.accent}`}>
+                {n.tag}
+              </span>
+            </div>
+
+            <p class="pf-node-meta">
+              <span>
+                <strong>{n.role}</strong> &middot; {n.company}
+              </span>
+              <span>{n.location}</span>
+              <span>{n.period}</span>
+            </p>
+
+            {n.responsibilities.length > 0 && (
+              <ul class="pf-list" style={`--card-accent:${n.accent}`}>
+                {n.responsibilities.map((r) => (
+                  <li>{r}</li>
+                ))}
+              </ul>
+            )}
+
+            {n.skills.length > 0 && (
+              <div class="pf-chips">
+                {n.skills.map((s) => (
+                  <span class="pf-chip">{s}</span>
+                ))}
+              </div>
+            )}
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

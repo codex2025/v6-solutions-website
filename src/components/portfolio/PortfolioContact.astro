@@ -1,0 +1,62 @@
+---
+/**
+ * Contact.
+ *
+ * The source shipped a message form that only simulated a send — no backend.
+ * A form that silently discards messages is worse than no form, so it is left
+ * out until the Web3Forms/Formspree key exists (CLAUDE.md § Forms). Real links
+ * only. Email renders only when the founder file actually carries one.
+ */
+import { BRAND } from '../../config/site';
+
+interface Props {
+  contact?: { heading: string; blurb: string; availability?: string };
+  name: string;
+  links: { label: string; href: string }[];
+}
+
+const { contact, name, links } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<section class="pf-section" id="contact" style="background:var(--pf-bg3);border-top:1px solid var(--pf-line)">
+  <div class="pf-orb" style="bottom:-10%;left:50%;translate:-50% 0;width:min(40rem,80vw);aspect-ratio:1;background:color-mix(in srgb,var(--pf-accent) 16%,transparent)"></div>
+
+  <div class="pf-wrap" style="position:relative;z-index:1">
+    <p class="pf-eyebrow">Contact</p>
+    <h2 class="pf-h2 pf-reveal">
+      {contact?.heading ?? "Let's Talk"}
+    </h2>
+    {contact?.blurb && <p class="pf-lede">{contact.blurb}</p>}
+
+    {
+      contact?.availability && (
+        <p class="pf-pill-row" style="margin-top:1.5rem">
+          <span class="pf-pill pf-pill-alt">&#9679; {contact.availability}</span>
+        </p>
+      )
+    }
+
+    <div class="pf-contact-grid">
+      {
+        links.map((l) => (
+          <a
+            class="pf-contact-link"
+            href={l.href}
+            target={l.href.startsWith('mailto:') ? undefined : '_blank'}
+            rel={l.href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+          >
+            <span>{l.label}</span>
+            <span aria-hidden="true">&#8599;</span>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="pf-wrap pf-footer" style="margin-top:4rem;position:relative;z-index:1">
+    <p>
+      &copy; {year} {name} &middot; <a href="/team/">{BRAND} team</a>
+    </p>
+  </div>
+</section>

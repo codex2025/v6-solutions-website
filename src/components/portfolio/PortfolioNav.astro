@@ -1,0 +1,21 @@
+---
+/**
+ * Floating glassmorphic capsule nav.
+ *
+ * The source portfolio tracked the active section with a JS scroll listener.
+ * Dropped: anchor links do the job, and CSS :target cannot style a remote
+ * element. Costs nothing, works with JS disabled.
+ */
+interface Props {
+  sections: { id: string; label: string }[];
+}
+
+const { sections } = Astro.props;
+---
+
+<nav class="pf-nav" aria-label="Portfolio sections">
+  <div class="pf-nav-inner">
+    <a href="/team/" class="pf-nav-home" aria-label="Back to the team page">&larr; Team</a>
+    {sections.map((s) => <a href={`#${s.id}`}>{s.label}</a>)}
+  </div>
+</nav>

@@ -1,0 +1,68 @@
+---
+/**
+ * Metrics.
+ *
+ * The source fetched these live from LeetCode's GraphQL API through a Next.js
+ * route handler. Our build is `output: 'static'` on Cloudflare Pages — there is
+ * no server to proxy that call, and calling LeetCode from the browser fails
+ * CORS. So these are a dated SNAPSHOT, and the page says so plainly rather than
+ * implying live data. Making them live again means a Cloudflare Pages Function
+ * or a build-time fetch — see INTEGRATION.md § 3 ④.
+ */
+interface Props {
+  metrics: {
+    label: string;
+    value: string;
+    suffix?: string;
+    note: string;
+    accent: string;
+    breakdown: { label: string; color: string }[];
+  }[];
+  asOf: string;
+  profileUrl?: string;
+}
+
+const { metrics, asOf, profileUrl } = Astro.props;
+---
+
+<section class="pf-section" id="metrics" style="background:var(--pf-bg3);border-top:1px solid var(--pf-line)">
+  <div class="pf-wrap">
+    <p class="pf-eyebrow">By the Numbers</p>
+    <h2 class="pf-h2 pf-reveal">Practice &amp; <span class="pf-grad">Proof</span></h2>
+    <p class="pf-lede">
+      A snapshot, not a live feed — figures accurate as of {asOf}.
+      {profileUrl && (
+        <>
+          {' '}<a href={profileUrl} target="_blank" rel="noopener noreferrer" style="color:var(--pf-accent)">
+            Check the live profile<span class="pf-sr"> (opens in a new tab)</span></a>.
+        </>
+      )}
+    </p>
+
+    <div class="pf-card-grid" style="margin-top:2.5rem">
+      {
+        metrics.map((m) => (
+          <div class="pf-metric pf-reveal" style={`--metric-accent:${m.accent}`}>
+            <div>
+              <p class="pf-metric-label">{m.label}</p>
+              <p class="pf-metric-value">
+                {m.value}
+                {m.suffix && <small>{m.suffix}</small>}
+              </p>
+            </div>
+
+            {m.breakdown.length > 0 ? (
+              <div class="pf-metric-note" style="display:flex;gap:0.9rem;flex-wrap:wrap">
+                {m.breakdown.map((b) => (
+                  <span style={`color:${b.color}`}>{b.label}</span>
+                ))}
+              </div>
+            ) : (
+              <p class="pf-metric-note">{m.note}</p>
+            )}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

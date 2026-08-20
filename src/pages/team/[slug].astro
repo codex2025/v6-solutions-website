@@ -1,0 +1,97 @@
+---
+/**
+ * Founder portfolio page.
+ *
+ * ONE template, SIX outcomes. This file never mentions a founder by name —
+ * every heading, colour, section and metric comes from that founder's markdown
+ * file. Adding founder #2 is: drop in a .md file, done. Nothing here changes.
+ *
+ * Sections render only when their data exists, so a founder without research
+ * papers has no empty Awards band.
+ */
+import { getCollection, render } from 'astro:content';
+import PortfolioLayout from '../../layouts/PortfolioLayout.astro';
+import PortfolioNav from '../../components/portfolio/PortfolioNav.astro';
+import PortfolioHero from '../../components/portfolio/PortfolioHero.astro';
+import PortfolioAbout from '../../components/portfolio/PortfolioAbout.astro';
+import PortfolioWork from '../../components/portfolio/PortfolioWork.astro';
+import PortfolioExperience from '../../components/portfolio/PortfolioExperience.astro';
+import PortfolioStack from '../../components/portfolio/PortfolioStack.astro';
+import PortfolioMetrics from '../../components/portfolio/PortfolioMetrics.astro';
+import PortfolioAwards from '../../components/portfolio/PortfolioAwards.astro';
+import PortfolioBeyond from '../../components/portfolio/PortfolioBeyond.astro';
+import PortfolioContact from '../../components/portfolio/PortfolioContact.astro';
+
+export async function getStaticPaths() {
+  const founders = await getCollection('founders', (f) => f.data.portfolio?.enabled);
+  return founders.map((founder) => ({ params: { slug: founder.data.slug }, props: { founder } }));
+}
+
+const { founder } = Astro.props;
+const d = founder.data;
+/* Non-null: getStaticPaths only emits founders whose portfolio is enabled. */
+const p = d.portfolio!;
+
+const { Content } = await render(founder);
+
+/* Nav is built from the sections that actually rendered — never a dead anchor. */
+const sections = [
+  p.about && { id: 'about', label: 'About' },
+  p.work && { id: 'work', label: 'Work' },
+  p.experience && { id: 'experience', label: 'Experience' },
+  p.stack && { id: 'stack', label: 'Stack' },
+  p.metrics && { id: 'metrics', label: 'Numbers' },
+  p.awards && { id: 'awards', label: 'Awards' },
+  p.beyond && { id: 'beyond', label: 'Beyond' },
+  { id: 'contact', label: 'Contact' },
+].filter((s): s is { id: string; label: string } => Boolean(s));
+
+const links = [
+  d.github && { label: 'GitHub', href: d.github },
+  d.linkedin && { label: 'LinkedIn', href: d.linkedin },
+  d.leetcode && { label: 'LeetCode', href: d.leetcode },
+  d.email && { label: 'Email', href: `mailto:${d.email}` },
+].filter((l): l is { label: string; href: string } => Boolean(l));
+
+/* Metrics are a dated snapshot, not a live feed — see PortfolioMetrics. */
+const METRICS_AS_OF = 'August 2026';
+---
+
+<PortfolioLayout
+  title={`${d.name} — ${d.role}`}
+  description={d.bio.slice(0, 155)}
+  theme={p.theme}
+  person={{
+    name: d.name,
+    role: d.role,
+    bio: d.bio,
+    sameAs: [d.github, d.linkedin, d.leetcode].filter((u): u is string => Boolean(u)),
+  }}
+>
+  <PortfolioNav sections={sections} />
+
+  <main id="pf-main">
+    <PortfolioHero hero={p.hero} name={d.name} photo={d.photo} />
+
+    {p.about && <PortfolioAbout about={p.about} />}
+    {p.work && <PortfolioWork work={p.work} />}
+    {p.experience && <PortfolioExperience experience={p.experience} />}
+    {p.stack && <PortfolioStack stack={p.stack} />}
+    {p.metrics && <PortfolioMetrics metrics={p.metrics} asOf={METRICS_AS_OF} profileUrl={d.leetcode} />}
+    {p.awards && <PortfolioAwards awards={p.awards} />}
+    {p.beyond && <PortfolioBeyond beyond={p.beyond} />}
+
+    {/* Optional long-form body from the markdown file, if the founder wrote any. */}
+    <div class="pf-wrap pf-prose"><Content /></div>
+
+    <PortfolioContact contact={p.contact} name={d.name} links={links} />
+  </main>
+</PortfolioLayout>
+
+<style>
+  .pf-prose:not(:empty) {
+    padding-block: 2rem;
+    color: var(--pf-muted);
+    line-height: 1.7;
+  }
+</style>

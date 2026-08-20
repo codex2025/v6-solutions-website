@@ -1,0 +1,134 @@
+---
+/**
+ * PortfolioLayout — document shell for founder portfolio pages.
+ *
+ * Deliberately NOT BaseLayout. BaseLayout paints the company brand shell
+ * (white body, company header/footer) and its palette is still a Phase 2
+ * decision. Founder portfolios carry the founder's OWN identity, so they get
+ * their own shell and their own stylesheet. Neither can bleed into the other.
+ *
+ * The founder's three accent colours arrive as CSS custom properties on .pf,
+ * which is what makes one shared template render six distinct portfolios.
+ */
+import '../styles/portfolio.css';
+import { SITE_URL, BRAND } from '../config/site';
+
+interface Props {
+  title: string;
+  description: string;
+  theme: { accent: string; accent2: string; accent3: string; paper: string; paper2: string };
+  /** Person JSON-LD — CLAUDE.md § SEO requires it on founder pages. */
+  person?: {
+    name: string;
+    role: string;
+    bio: string;
+    image?: string;
+    sameAs: string[];
+  };
+}
+
+const { title, description, theme, person } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, SITE_URL).href;
+const pageTitle = `${title} — ${BRAND}`;
+
+const jsonLd = person && {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: person.name,
+  jobTitle: person.role,
+  description: person.bio,
+  url: canonical,
+  ...(person.image ? { image: new URL(person.image, SITE_URL).href } : {}),
+  ...(person.sameAs.length ? { sameAs: person.sameAs } : {}),
+  worksFor: { '@type': 'Organization', name: BRAND, url: SITE_URL },
+};
+
+const themeVars = [
+  `--pf-accent:${theme.accent}`,
+  `--pf-accent2:${theme.accent2}`,
+  `--pf-accent3:${theme.accent3}`,
+  `--pf-paper:${theme.paper}`,
+  `--pf-paper2:${theme.paper2}`,
+  `--pf-font-display:'Bebas Neue',Impact,sans-serif`,
+  `--pf-font-body:'Outfit',system-ui,sans-serif`,
+  `--pf-font-mono:'JetBrains Mono',ui-monospace,monospace`,
+].join(';');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#03060F" />
+
+    <meta property="og:type" content="profile" />
+    <meta property="og:site_name" content={BRAND} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap"
+    />
+
+    {jsonLd && <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+    <meta name="generator" content={Astro.generator} />
+  </head>
+
+  <body>
+    <a href="#pf-main" class="pf-skip">Skip to content</a>
+    <div class="pf" style={themeVars}>
+      <slot />
+    </div>
+
+    <style is:global>
+      html {
+        scroll-behavior: smooth;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+      }
+
+      body {
+        margin: 0;
+        background: #03060f;
+      }
+
+      .pf-skip {
+        position: absolute;
+        left: -9999px;
+        z-index: 100;
+        padding: 0.75rem 1.25rem;
+        background: #f5f5f0;
+        color: #03060f;
+        font-family: system-ui, sans-serif;
+        font-size: 0.85rem;
+        border-radius: 0 0 0.5rem 0;
+        text-decoration: none;
+      }
+
+      .pf-skip:focus {
+        left: 0;
+        top: 0;
+      }
+    </style>
+  </body>
+</html>

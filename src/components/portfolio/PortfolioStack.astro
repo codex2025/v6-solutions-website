@@ -1,0 +1,84 @@
+---
+/**
+ * Technical stack — dual opposite-sliding marquees + expandable categories.
+ *
+ * Marquees: CSS keyframes, track duplicated once so the -50% loop is seamless.
+ * The duplicate is aria-hidden so screen readers hear each skill exactly once.
+ * Categories: native <details>, so they open with keyboard and with JS off.
+ */
+interface Props {
+  stack: {
+    marquee: { label: string; color: string }[][];
+    categories: {
+      id: string;
+      title: string;
+      desc: string;
+      accent: string;
+      skills: { name: string; level: number }[];
+    }[];
+  };
+}
+
+const { stack } = Astro.props;
+---
+
+<section class="pf-section" id="stack" style="background:var(--pf-bg)">
+  <div class="pf-wrap">
+    <p class="pf-eyebrow">Technical Stack</p>
+    <h2 class="pf-h2 pf-reveal">Tools &amp; <span class="pf-grad">Capabilities</span></h2>
+  </div>
+
+  <div style="margin-top:2.5rem;display:flex;flex-direction:column;gap:0.5rem">
+    {
+      stack.marquee.map((row, i) => (
+        <div class="pf-marquee">
+          <div class="pf-marquee-track" data-dir={i % 2 === 0 ? 'left' : 'right'}>
+            {row.map((s) => (
+              <span class="pf-badge" style={`--badge-color:${s.color}`}>
+                {s.label}
+              </span>
+            ))}
+            {row.map((s) => (
+              <span class="pf-badge" style={`--badge-color:${s.color}`} aria-hidden="true">
+                {s.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="pf-wrap">
+    <div class="pf-card-grid pf-grid-start" style="margin-top:3.5rem">
+      {
+        stack.categories.map((c, i) => (
+          <details class="pf-cat" style={`--cat-accent:${c.accent}`} open={i === 0}>
+            <summary>
+              <span class="pf-cat-num">{c.id}</span>
+              <h3>{c.title}</h3>
+              <svg class="pf-cat-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true">
+                <path d="M9 6l6 6-6 6" />
+              </svg>
+            </summary>
+
+            <div class="pf-cat-body">
+              <p class="pf-cat-desc">{c.desc}</p>
+              {c.skills.map((s) => (
+                <div class="pf-meter">
+                  <div class="pf-meter-top">
+                    <span>{s.name}</span>
+                    <span>{s.level}%</span>
+                  </div>
+                  <div class="pf-meter-rail">
+                    <div class="pf-meter-fill" style={`width:${s.level}%`} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>

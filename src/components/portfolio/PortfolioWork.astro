@@ -1,0 +1,89 @@
+---
+/**
+ * Selected work — horizontal snap rail.
+ *
+ * The source expanded each drawer on hover via React state. Hover-only
+ * disclosure is unreachable by keyboard and on touch, so the detail is always
+ * present here and the rail scrolls natively. :focus-within keeps the hover
+ * treatment when tabbing through.
+ */
+interface Props {
+  work: {
+    id: string;
+    title: string;
+    category: string;
+    subtitle: string;
+    year: string;
+    description: string;
+    highlights: string[];
+    architecture?: string;
+    tech: string[];
+    accent: string;
+    link?: string;
+  }[];
+}
+
+const { work } = Astro.props;
+---
+
+<section class="pf-section" id="work" style="background:var(--pf-bg)">
+  <div class="pf-orb" style="top:50%;right:-8%;width:min(38rem,70vw);aspect-ratio:1;translate:0 -50%;background:color-mix(in srgb,var(--pf-accent) 16%,transparent)">
+  </div>
+
+  <div class="pf-wrap" style="position:relative;z-index:1">
+    <p class="pf-eyebrow">Selected Work</p>
+    <h2 class="pf-h2 pf-reveal">Things I've <span class="pf-grad">Built</span></h2>
+    <p class="pf-rail-hint">Scroll the rail &rarr;</p>
+  </div>
+
+  <div class="pf-rail" style="position:relative;z-index:1" tabindex="0" role="region" aria-label="Selected work, horizontally scrollable">
+    {
+      work.map((p) => (
+        <article class="pf-work-card" style={`--card-accent:${p.accent}`}>
+          <div class="pf-work-top">
+            <span class="pf-work-id" aria-hidden="true">
+              {p.id}
+            </span>
+            <span class="pf-tag">{p.category}</span>
+          </div>
+
+          <h3>{p.title}</h3>
+          <p class="pf-work-sub">
+            {p.subtitle} &middot; {p.year}
+          </p>
+          <p class="pf-work-desc">{p.description}</p>
+
+          {p.highlights.length > 0 && (
+            <ul class="pf-list">
+              {p.highlights.map((h) => (
+                <li>{h}</li>
+              ))}
+            </ul>
+          )}
+
+          {p.architecture && (
+            <p class="pf-work-sub" style="margin-top:1.25rem;color:var(--pf-muted)">
+              {p.architecture}
+            </p>
+          )}
+
+          {p.tech.length > 0 && (
+            <div class="pf-chips">
+              {p.tech.map((t) => (
+                <span class="pf-chip">{t}</span>
+              ))}
+            </div>
+          )}
+
+          {p.link && (
+            <a class="pf-work-link" href={p.link} target="_blank" rel="noopener noreferrer">
+              View project
+              <span aria-hidden="true">&#8599;</span>
+              <span class="pf-sr">(opens in a new tab)</span>
+            </a>
+          )}
+        </article>
+      ))
+    }
+  </div>
+</section>

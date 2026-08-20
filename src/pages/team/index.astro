@@ -1,0 +1,117 @@
+---
+/**
+ * Team index.
+ *
+ * CLAUDE.md: "All six are equal — no visual hierarchy among founder cards."
+ * So this grid is uniform: same card, same size, same order rule (alphabetical
+ * by name — not seniority, not who shipped first). Each founder's accent tints
+ * only their own card.
+ *
+ * Founders without a portfolio still get a card; it just does not link out yet.
+ */
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import PortfolioLayout from '../../layouts/PortfolioLayout.astro';
+import { BRAND } from '../../config/site';
+
+const founders = (await getCollection('founders')).sort((a, b) =>
+  a.data.name.localeCompare(b.data.name),
+);
+
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .map((w) => w[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+
+/** Trim to a word boundary so cards never end mid-word ("…AR/VR simulat…"). */
+const excerpt = (text: string, max = 150) => {
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  return `${cut.slice(0, cut.lastIndexOf(' ')).replace(/[,;:.]$/, '')}…`;
+};
+
+/* Neutral shell theme — the team page belongs to no single founder. */
+const theme = {
+  accent: '#2B6FFF',
+  accent2: '#00C49A',
+  accent3: '#FFCB5B',
+  paper: '#F2EFE6',
+  paper2: '#E8E3D8',
+};
+---
+
+<PortfolioLayout
+  title="Team"
+  description={`The people behind ${BRAND} — engineers, designers and builders.`}
+  theme={theme}
+>
+  <main id="pf-main" class="pf-section">
+    <div class="pf-wrap">
+      <p class="pf-eyebrow">The Team</p>
+      <h1 class="pf-h2">
+        People Who <span class="pf-grad">Build</span>
+      </h1>
+      <p class="pf-lede">
+        Six equal founders. Each one keeps their own portfolio — click through for the full picture.
+      </p>
+
+      {
+        founders.length === 0 && (
+          <p class="pf-lede" style="margin-top:2rem">
+            {/* PLACEHOLDER: replace with real content */}
+            Founder profiles are being added.
+          </p>
+        )
+      }
+
+      <div class="pf-team-grid">
+        {
+          founders.map((f) => {
+            const hasPage = Boolean(f.data.portfolio?.enabled);
+            const accent = f.data.portfolio?.theme.accent ?? theme.accent;
+            const Tag = hasPage ? 'a' : 'div';
+
+            return (
+              <Tag
+                class="pf-team-card"
+                style={`--pf-accent:${accent}`}
+                {...(hasPage ? { href: `/team/${f.data.slug}/` } : {})}
+              >
+                {f.data.photo ? (
+                  <Image src={f.data.photo} alt={`Portrait of ${f.data.name}`} width={144} height={144} />
+                ) : (
+                  <div class="pf-initials" aria-hidden="true">
+                    {initials(f.data.name)}
+                  </div>
+                )}
+
+                <h2>{f.data.name}</h2>
+                <p style="font-family:var(--pf-font-mono);font-size:0.72rem;color:var(--pf-accent);margin-top:0.35rem">
+                  {f.data.role}
+                </p>
+                <p style="font-size:0.88rem;line-height:1.6;color:var(--pf-muted);margin-top:0.85rem">
+                  {excerpt(f.data.bio)}
+                </p>
+
+                <div class="pf-chips">
+                  {f.data.domains.slice(0, 3).map((dm) => (
+                    <span class="pf-chip">{dm}</span>
+                  ))}
+                </div>
+
+                {hasPage && (
+                  <p style="margin-top:1.25rem;font-family:var(--pf-font-mono);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--pf-accent)">
+                    View portfolio &rarr;
+                  </p>
+                )}
+              </Tag>
+            );
+          })
+        }
+      </div>
+    </div>
+  </main>
+</PortfolioLayout>

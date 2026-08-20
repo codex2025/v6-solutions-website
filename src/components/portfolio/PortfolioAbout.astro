@@ -1,0 +1,53 @@
+---
+/**
+ * About — the first inverted "paper" band.
+ *
+ * Note the line colours here are NOT the source portfolio's neon values.
+ * Those were tuned for a dark background; on cream they fell to ~2:1 contrast.
+ * The founder file carries darkened equivalents that keep the same hue
+ * relationships and pass WCAG AA on #F2EFE6.
+ */
+interface Props {
+  about: {
+    heading: string;
+    lines: { text: string; color: string }[];
+    chapters: { num: string; heading: string; body: string; accent: string }[];
+  };
+}
+
+const { about } = Astro.props;
+---
+
+<section class="pf-section pf-paper" id="about">
+  <div class="pf-watermark" aria-hidden="true">ABOUT</div>
+
+  <div class="pf-wrap" style="position:relative;z-index:1">
+    <p class="pf-eyebrow">About</p>
+    <h2 class="pf-h2 pf-reveal">{about.heading}</h2>
+
+    <div class="pf-about-lines">
+      {
+        about.lines.map((l) => (
+          <span class="pf-reveal-x" style={`color:${l.color}`}>
+            {l.text}
+          </span>
+        ))
+      }
+    </div>
+
+    <div class="pf-card-grid">
+      {
+        about.chapters.map((c) => (
+          <article class="pf-chapter pf-reveal">
+            <span class="pf-chapter-num" aria-hidden="true">
+              {c.num}
+            </span>
+            <div class="pf-chapter-rule" style={`background:${c.accent}`} />
+            <h3>{c.heading}</h3>
+            <p>{c.body}</p>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

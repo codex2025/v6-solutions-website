@@ -1,0 +1,167 @@
+---
+/**
+ * Hero.
+ *
+ * The source used a Three.js canvas: 2,500 particles, wireframe icosahedrons,
+ * orbit rings. That is ~230KB+ of JS against a ~50KB site budget, so it is
+ * replaced here by a CSS radial gradient, blurred ambient orbs and an inline
+ * SVG constellation — visually close, 0KB of JS, and it renders with JS off.
+ */
+import { Image } from 'astro:assets';
+
+interface Props {
+  hero: {
+    displayName: string;
+    displayAccent?: string;
+    roles: string[];
+    statement: string;
+    backdropText: string;
+    badge?: string;
+  };
+  name: string;
+  photo?: ImageMetadata;
+}
+
+const { hero, name, photo } = Astro.props;
+
+const initials = name
+  .split(/\s+/)
+  .map((w) => w[0])
+  .join('')
+  .slice(0, 2)
+  .toUpperCase();
+
+/* Deterministic constellation — seeded so the build output is stable.
+   A fixed sequence beats Math.random(): no diff churn between builds. */
+const stars = Array.from({ length: 46 }, (_, i) => {
+  const a = (i * 137.508 * Math.PI) / 180;
+  const r = 6 + (i % 11) * 4.2;
+  return {
+    x: 50 + Math.cos(a) * r * 0.95,
+    y: 50 + Math.sin(a) * r * 0.62,
+    s: 0.4 + ((i * 7) % 5) * 0.22,
+    o: 0.2 + ((i * 3) % 6) * 0.11,
+  };
+});
+---
+
+<section class="pf-hero" id="hero">
+  <div class="pf-orb pf-orb-a"></div>
+  <div class="pf-orb pf-orb-b"></div>
+
+  <svg class="pf-stars" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    {stars.map((p) => <circle cx={p.x} cy={p.y} r={p.s * 0.28} opacity={p.o} fill="currentColor" />)}
+  </svg>
+
+  <div class="pf-hero-backdrop" aria-hidden="true">
+    <span>{hero.backdropText}</span>
+  </div>
+
+  <div class="pf-wrap pf-hero-grid">
+    <div>
+      <h1 class="pf-hero-name">
+        {hero.displayName}
+        {hero.displayAccent && <span class="pf-grad">{hero.displayAccent}</span>}
+      </h1>
+
+      <p class="pf-hero-roles">
+        {
+          hero.roles.map((r, i) => (
+            <>
+              <span>{r}</span>
+              {i < hero.roles.length - 1 && <span aria-hidden="true">&bull;</span>}
+            </>
+          ))
+        }
+      </p>
+
+      <p class="pf-hero-statement">{hero.statement}</p>
+
+      <div class="pf-cta-row">
+        <a href="#work" class="pf-btn pf-btn-primary">Explore work &rarr;</a>
+        <a href="#contact" class="pf-btn pf-btn-ghost">Get in touch</a>
+      </div>
+    </div>
+
+    <div class="pf-portrait">
+      <div class="pf-portrait-glow" aria-hidden="true"></div>
+
+      <div class="pf-portrait-frame">
+        {
+          photo ? (
+            <Image
+              src={photo}
+              alt={`Portrait of ${name}`}
+              widths={[320, 480, 640]}
+              sizes="(min-width: 64rem) 30rem, 80vw"
+              loading="eager"
+              fetchpriority="high"
+            />
+          ) : (
+            <div class="pf-initials" aria-hidden="true">
+              {initials}
+            </div>
+          )
+        }
+      </div>
+
+      <div class="pf-portrait-card">
+        <p class="pf-portrait-name">{name}</p>
+        {hero.badge && <p class="pf-portrait-badge">{hero.badge}</p>}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pf-orb-a {
+    top: 18%;
+    left: 12%;
+    width: min(30rem, 60vw);
+    aspect-ratio: 1;
+    background: color-mix(in srgb, var(--pf-accent) 22%, transparent);
+  }
+
+  .pf-orb-b {
+    bottom: 16%;
+    right: 14%;
+    width: min(26rem, 55vw);
+    aspect-ratio: 1;
+    background: color-mix(in srgb, var(--pf-accent2) 18%, transparent);
+  }
+
+  .pf-stars {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    color: var(--pf-accent2);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .pf-hero-backdrop {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    translate: 0 -50%;
+    overflow: hidden;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+    opacity: 0.045;
+  }
+
+  .pf-hero-backdrop span {
+    font-family: var(--pf-font-display);
+    font-size: 18vw;
+    line-height: 1;
+    color: #fff;
+  }
+
+  .pf-hero-name .pf-grad {
+    margin-left: 0.15em;
+  }
+</style>
