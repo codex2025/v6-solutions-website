@@ -1,15 +1,76 @@
 @import "tailwindcss";
 
 /*
- * Baseline accessibility only.
+ * Design tokens — decisions 2.5, 2.6 (DECISIONS.md § Phase 2).
  *
- * Design tokens — brand colours, type scale, spacing rhythm — belong here but
- * are NOT yet defined: palette and typography are Phase 2 decisions awaiting
- * founder approval. CLAUDE.md: never apply a palette without approval.
+ * Colours are sampled directly from public/logos/ (not eyeballed): the brand
+ * gradient runs royal blue -> cyan -> lime green, lockup background is navy.
+ *
+ * `data-page-theme` is a PER-PAGE BRAND CHOICE, set explicitly by BaseLayout's
+ * `theme` prop (decision 2.6 — split by page type). It has nothing to do with
+ * the visitor's OS light/dark preference — do not wire this to
+ * prefers-color-scheme. Founder portfolio pages (decision 1.17) carry their
+ * own independent palette in portfolio.css and never read these tokens.
  */
 
+@theme {
+  --font-display: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --font-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --color-brand-blue: #014af0;
+  --color-brand-cyan: #03adc1;
+  --color-brand-lime: #84f660;
+  --color-brand-navy: #010717;
+}
+
+:root {
+  /* True brand gradient — decorative use only (logo, thin accent bars, the
+     hero's 3D scene). Not guaranteed AA-contrast as text; see --grad-text
+     inside each theme block for the text-safe, per-surface tuned version. */
+  --grad-solid: linear-gradient(120deg, #014af0, #03adc1, #84f660);
+}
+
+[data-page-theme='dark'] {
+  --bg: #010717;
+  --surface: #0b1428;
+  --surface-raised: #101c38;
+  --text: #f4f6f8;
+  --muted: #93a0bc;
+  --border: #1b2540;
+  --grid-line: rgba(255, 255, 255, 0.045);
+
+  --accent-blue: #2e7cff;
+  --accent-cyan: #22c7d9;
+  --accent-lime: #8ff56a;
+  --grad-text: linear-gradient(120deg, #4c8cff, #3cd3e4, #9cfa7c);
+  --btn-bg: #2e7cff;
+  --btn-bg-hover: #1a63e0;
+  --btn-text: #ffffff;
+  --focus-ring: #5c93ff;
+}
+
+[data-page-theme='light'] {
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --surface-raised: #eff2f6;
+  --text: #0b1220;
+  --muted: #57647a;
+  --border: #e1e6ec;
+  --grid-line: rgba(11, 18, 32, 0.05);
+
+  --accent-blue: #0b45d6;
+  --accent-cyan: #0a8b99;
+  --accent-lime: #4e9e2a;
+  --grad-text: linear-gradient(120deg, #0b45d6, #0a8b99, #4e9e2a);
+  --btn-bg: #0b45d6;
+  --btn-bg-hover: #0937ab;
+  --btn-text: #ffffff;
+  --focus-ring: #0b45d6;
+}
+
 /* CLAUDE.md requires prefers-reduced-motion to be respected site-wide.
-   Enforced here so it holds for every component added later. */
+   Enforced here so it holds for every component added later, and again
+   inside the rich animation tier's own capability gate (decision 2.8). */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -23,4 +84,34 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+}
+
+/* Shared focus-visible treatment, theme-aware. Replaces the hardcoded
+   neutral-900 rings from the Phase 1 shell. */
+.focus-ring {
+  outline-offset: 4px;
+}
+.focus-ring:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 4px;
+}
+
+/* Decision 2.8 — touch/press feedback lives in the CSS-only base tier, not
+   gated behind the rich-tier capability check: it's cheap and helps every
+   visitor confirm a tap landed. Applied via class from Header/Footer/CTA
+   buttons. Respects prefers-reduced-motion via the block above. */
+.press-feedback {
+  transition:
+    transform 0.12s ease,
+    background-color 0.12s ease,
+    opacity 0.12s ease;
+}
+.press-feedback:active {
+  transform: scale(0.96);
 }

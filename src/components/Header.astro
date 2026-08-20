@@ -1,39 +1,46 @@
 ---
 /**
- * Header — STRUCTURAL SHELL ONLY (Phase 1).
+ * Header — Phase 2 build (decisions 2.5, 2.6, 2.7, 2.8).
  *
- * Visual style is deliberately undecided: CLAUDE.md requires that header
- * variants (transparent-over-hero / solid with contact strip / minimal centred)
- * are offered to the founder before one is built. That happens in Phase 2.
- * Everything below is neutral scaffolding, not a design proposal.
+ * Theme-aware: reads the ambient `--bg` / `--text` / `--accent-blue` tokens
+ * set by BaseLayout's `data-page-theme` on <body> (decision 2.6 — split by
+ * page type). Never hardcode a colour here; every page that includes this
+ * component supplies its own theme via those tokens.
  *
- * Mobile menu uses <details>/<summary> so it works with JavaScript disabled.
+ * Mobile menu still uses <details>/<summary> — works with JavaScript
+ * disabled, matching the CSS-only lite tier (decision 2.8).
  */
-import { BRAND_MARK, NAV } from '../config/site';
+import { Image } from 'astro:assets';
+import icon from '../assets/logos/v6-icon.png';
+import { BRAND, NAV } from '../config/site';
 
 const path = Astro.url.pathname;
 const isActive = (href: string) => path === href || path.startsWith(href);
 ---
 
-<header class="border-b border-neutral-200">
-  <div class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4">
+<header class="sticky top-0 z-50 border-b" style="background: color-mix(in srgb, var(--bg) 82%, transparent); border-color: var(--border); backdrop-filter: blur(10px);">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
     <a
       href="/"
-      class="text-lg font-semibold tracking-tight text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900"
+      class="ripple focus-ring flex items-center gap-2.5 rounded-sm px-1 py-1"
+      style="color: var(--text);"
     >
-      {BRAND_MARK}
+      <Image src={icon} width={30} height={30} alt="" class="h-[30px] w-[30px]" />
+      <span class="text-[15px] font-semibold tracking-tight" style="font-family: var(--font-display);">{BRAND}</span>
     </a>
 
     <!-- Desktop navigation -->
     <nav aria-label="Primary" class="hidden sm:block">
-      <ul class="flex items-center gap-6">
+      <ul class="flex items-center gap-1">
         {
           NAV.map((item) => (
             <li>
               <a
                 href={item.href}
                 aria-current={isActive(item.href) ? 'page' : undefined}
-                class="text-sm text-neutral-700 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900 aria-[current=page]:font-semibold aria-[current=page]:text-neutral-900"
+                class="nav-link ripple focus-ring block rounded-sm px-3 py-2 text-[13.5px] font-medium"
+                style={`color: ${isActive(item.href) ? 'var(--text)' : 'var(--muted)'};`}
+                data-active={isActive(item.href) ? 'true' : undefined}
               >
                 {item.label}
               </a>
@@ -43,30 +50,76 @@ const isActive = (href: string) => path === href || path.startsWith(href);
       </ul>
     </nav>
 
+    <a
+      href="/contact/"
+      data-magnetic
+      class="ripple focus-ring press-feedback hidden rounded-full px-4 py-2 text-[13px] font-semibold sm:inline-block"
+      style="background: var(--btn-bg); color: var(--btn-text);"
+    >
+      Get in touch
+    </a>
+
     <!-- Mobile navigation: no JavaScript required -->
-    <details class="sm:hidden">
+    <details class="relative sm:hidden">
       <summary
-        class="cursor-pointer list-none rounded border border-neutral-300 px-3 py-2 text-sm text-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900"
+        class="ripple focus-ring list-none rounded-md border px-3 py-2 text-sm"
+        style="border-color: var(--border); color: var(--text);"
       >
         Menu
       </summary>
-      <nav aria-label="Primary" class="absolute right-4 z-10 mt-2 rounded border border-neutral-200 bg-white p-2 shadow-lg">
-        <ul class="flex min-w-40 flex-col">
+      <nav
+        aria-label="Primary"
+        class="absolute right-0 z-10 mt-2 min-w-44 rounded-lg border p-1.5 shadow-lg"
+        style="border-color: var(--border); background: var(--surface);"
+      >
+        <ul class="flex flex-col">
           {
             NAV.map((item) => (
               <li>
                 <a
                   href={item.href}
                   aria-current={isActive(item.href) ? 'page' : undefined}
-                  class="block px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-neutral-900 aria-[current=page]:font-semibold aria-[current=page]:text-neutral-900"
+                  class="focus-ring block rounded px-3 py-2 text-sm"
+                  style={`color: ${isActive(item.href) ? 'var(--text)' : 'var(--muted)'}; font-weight: ${isActive(item.href) ? '600' : '400'};`}
                 >
                   {item.label}
                 </a>
               </li>
             ))
           }
+          <li class="mt-1 border-t pt-1" style="border-color: var(--border);">
+            <a href="/contact/" class="focus-ring block rounded px-3 py-2 text-sm font-semibold" style="color: var(--accent-blue);">
+              Get in touch
+            </a>
+          </li>
         </ul>
       </nav>
     </details>
   </div>
 </header>
+
+<style>
+  .nav-link {
+    position: relative;
+    transition: color 0.15s ease;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 3px;
+    height: 2px;
+    background: var(--grad-text);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+  .nav-link:hover {
+    color: var(--text) !important;
+  }
+  .nav-link:hover::after,
+  .nav-link[data-active]::after {
+    transform: scaleX(1);
+  }
+</style>

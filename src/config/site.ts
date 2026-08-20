@@ -18,14 +18,20 @@ export const SITE_URL = 'https://v6solutions.pages.dev';
 export const BRAND = 'V6 Solutions';
 
 /**
- * Decision 1.9 — ™ appears in the wordmark/logo ONLY, never in body copy.
- * Never use ® : no trademark registration has been granted.
+ * Decision 2.4 amends 1.9 — no ™ anywhere, founder overrode it directly.
+ * Never use ® either: no trademark registration has been granted.
+ * Kept equal to BRAND (not a separate string) so nothing downstream still
+ * expecting a "mark" variant silently reintroduces the symbol.
  */
-export const BRAND_MARK = 'V6 Solutions™';
+export const BRAND_MARK = BRAND;
+
+/** Decision 2.1 — the real tagline, shipped inside the founder's own logo artwork. */
+export const TAGLINE = 'Build · Innovate · Elevate';
 
 /**
- * Decision 1.8 — holding-page descriptor. This is NOT the tagline.
- * The tagline is a Phase 2 decision and has not been made.
+ * Decision 1.8 — original holding-page descriptor. Superseded as *the*
+ * tagline by decision 2.1, but kept as real, already-approved copy — used as
+ * hero subhead text now.
  */
 export const ONE_LINER =
   'Hardware. Software. Design. Engineering solutions for businesses worldwide.';

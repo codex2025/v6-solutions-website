@@ -1,59 +1,76 @@
 ---
 /**
- * Footer — STRUCTURAL SHELL ONLY (Phase 1).
+ * Footer — Phase 2 build (decisions 2.5, 2.6, 2.7).
  *
- * Visual style is undecided (CLAUDE.md requires footer variants to be offered
- * before one is built) — Phase 2.
- *
- * Decision 1.6: NO "Made in Tamil Nadu, serving Pan India" line. The approved
- * positioning is global. Do not reintroduce region-locked copy here.
- *
- * Legal/trust items (Udyam/MSME number, registered firm name) are NOT yet
- * decided and must never be invented — see CLAUDE.md.
+ * Theme-aware, same tokens as Header.astro. Decision 1.6: no "Made in Tamil
+ * Nadu, serving Pan India" line — positioning is global. Legal/trust items
+ * (Udyam/MSME number, registered firm name) are still not decided and must
+ * never be invented.
  */
-import { BRAND, NAV } from '../config/site';
+import { Image } from 'astro:assets';
+import icon from '../assets/logos/v6-icon.png';
+import { BRAND, NAV, TAGLINE, CONTACT_EMAIL, HAS_CONTACT_EMAIL } from '../config/site';
 
 const year = new Date().getFullYear();
 ---
 
-<footer class="mt-16 border-t border-neutral-200">
-  <div class="mx-auto max-w-5xl px-4 py-10">
-    <nav aria-label="Footer">
-      <ul class="flex flex-wrap gap-x-6 gap-y-2">
+<footer class="mt-24 border-t" style="border-color: var(--border);">
+  <div class="h-[3px]" style="background: var(--grad-solid);"></div>
+
+  <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+    <div class="flex flex-col gap-10 sm:flex-row sm:justify-between">
+      <div class="max-w-sm">
+        <a href="/" class="ripple focus-ring inline-flex items-center gap-2.5 rounded-sm" style="color: var(--text);">
+          <Image src={icon} width={28} height={28} alt="" class="h-7 w-7" />
+          <span class="text-[15px] font-semibold tracking-tight" style="font-family: var(--font-display);">{BRAND}</span>
+        </a>
+        <p class="mt-3 text-sm" style="color: var(--muted);">{TAGLINE}</p>
+
         {
-          NAV.map((item) => (
-            <li>
-              <a
-                href={item.href}
-                class="text-sm text-neutral-700 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900"
-              >
-                {item.label}
-              </a>
-            </li>
-          ))
+          HAS_CONTACT_EMAIL ? (
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              class="focus-ring mt-4 inline-block text-sm underline underline-offset-4"
+              style="color: var(--accent-blue);"
+            >
+              {CONTACT_EMAIL}
+            </a>
+          ) : (
+            <p class="mt-4 text-sm" style="color: var(--muted);">Contact details coming shortly.</p>
+          )
         }
-      </ul>
-    </nav>
+      </div>
+
+      <nav aria-label="Footer">
+        <ul class="grid grid-cols-2 gap-x-10 gap-y-2 sm:flex sm:flex-col">
+          {
+            NAV.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class="focus-ring press-feedback inline-block rounded-sm py-0.5 text-sm"
+                  style="color: var(--muted);"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
 
     <!-- PLACEHOLDER: registered firm name and Udyam/MSME number, once available.
          Never publish a registration number that has not actually been issued. -->
 
-    <div class="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-neutral-200 pt-6">
-      <p class="text-sm text-neutral-600">&copy; {year} {BRAND}. All rights reserved.</p>
+    <div class="mt-12 flex flex-wrap items-center justify-between gap-4 border-t pt-6" style="border-color: var(--border);">
+      <p class="text-xs" style="color: var(--muted);">&copy; {year} {BRAND}. All rights reserved.</p>
       <ul class="flex gap-x-6">
         <li>
-          <a
-            href="/terms/"
-            class="text-sm text-neutral-600 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900"
-            >Terms</a
-          >
+          <a href="/terms/" class="focus-ring text-xs underline-offset-4 hover:underline" style="color: var(--muted);">Terms</a>
         </li>
         <li>
-          <a
-            href="/privacy/"
-            class="text-sm text-neutral-600 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900"
-            >Privacy</a
-          >
+          <a href="/privacy/" class="focus-ring text-xs underline-offset-4 hover:underline" style="color: var(--muted);">Privacy</a>
         </li>
       </ul>
     </div>

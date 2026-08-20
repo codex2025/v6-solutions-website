@@ -21,9 +21,15 @@ interface Props {
    */
   chrome?: boolean;
   noindex?: boolean;
+  /**
+   * Decision 2.6 — split by page type. A fixed, per-page brand choice, not a
+   * response to the visitor's OS light/dark preference. Home / About /
+   * Products pass 'dark'; Services / Portfolio / Team / Contact pass 'light'.
+   */
+  theme?: 'dark' | 'light';
 }
 
-const { title, description, chrome = true, noindex = false } = Astro.props;
+const { title, description, chrome = true, noindex = false, theme = 'light' } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, SITE_URL).href;
 const pageTitle = title === BRAND ? BRAND : `${title} — ${BRAND}`;
@@ -35,6 +41,15 @@ const pageTitle = title === BRAND ? BRAND : `${title} — ${BRAND}`;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <!-- Decision 2.5 (provisional) — IBM Plex Mono (display/technical labels)
+         + IBM Plex Sans (body/headlines). -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
@@ -54,10 +69,11 @@ const pageTitle = title === BRAND ? BRAND : `${title} — ${BRAND}`;
     <meta name="generator" content={Astro.generator} />
   </head>
 
-  <body class="flex min-h-screen flex-col bg-white text-neutral-900 antialiased">
+  <body data-page-theme={theme} class="flex min-h-screen flex-col antialiased">
     <a
       href="#main"
-      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-neutral-900 focus:px-4 focus:py-2 focus:text-white"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:px-4 focus:py-2"
+      style="background: var(--accent-blue, #0b45d6); color: #fff;"
     >
       Skip to content
     </a>
@@ -69,5 +85,10 @@ const pageTitle = title === BRAND ? BRAND : `${title} — ${BRAND}`;
     </main>
 
     {chrome && <Footer />}
+
+    <script>
+      import { initMotion } from '../scripts/motion';
+      void initMotion();
+    </script>
   </body>
 </html>

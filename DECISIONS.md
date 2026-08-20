@@ -117,3 +117,47 @@ when their data exists, so nobody gets an empty "Awards" band.
 - [ ] **Private GitHub repo** — not yet created (decision 1.2). Needed before Cloudflare Pages auto-deploy.
 - [ ] **Cloudflare Pages project** — not yet created; holding page is built and verified locally but is **not live**.
 - [ ] `CLAUDE.md` rename, and amend it for decision 1.6 (global positioning).
+
+---
+
+## Phase 2 — Brand & design system
+
+**Date:** 2026-08-20
+**Batches:** 2a (brand identity), 2b (logo asset + palette, revised after founder supplied the
+real logo file mid-interview), 2c (animation/3D direction and JS-budget policy — founder-initiated,
+outside the original interview list)
+
+### Brand identity
+
+| # | Decision | Choice | Notes |
+|---|---|---|---|
+| 2.1 | **Tagline** | **"Build · Innovate · Elevate"** | ⚠️ **Supersedes an earlier pick in the same session** ("Engineering solutions for businesses worldwide."). Founder's actual logo artwork ships with this line baked in — treated as the real, already-decided tagline. The superseded line remains available as hero subhead copy (it's `ONE_LINER` in `site.ts`, decision 1.8, untouched). |
+| 2.2 | **Logo** | **Founder supplied final artwork** — `public/logos/*.png` | Not designed by Claude Code. Icon: a V that resolves into a 6, gradient. Lockup: navy background, white "V6" + gradient "6", tagline underneath. Supersedes the "propose 3 logo concepts" instruction in CLAUDE.md §1 — moot once real artwork exists. |
+| 2.3 | **Brand voice** | **Friendly-professional** | Direct, technically confident (per CLAUDE.md baseline) but approachable — second person, contractions okay. |
+| 2.4 | **Trademark mark** | **No ™ anywhere, for now** | ⚠️ **Amends decision 1.9**, which set "V6 Solutions™" in the wordmark only. Founder overrode this directly. Never ® until an actual registration is granted (1.9's other clause still stands). |
+| 2.5 | **Typography** | **IBM Plex Mono (display/technical labels) + IBM Plex Sans (body/headlines)** | ⚠️ **Not founder-confirmed — Claude Code's pick, flagged as provisional**, made under founder direction to keep moving rather than run another interview round. Chosen for the "precision engineering" identity anchor and because mono labels suit the HUD-style overlays used in the animated/3D sections (2.7). Change on request. |
+
+### Colour palette
+
+| # | Decision | Choice | Notes |
+|---|---|---|---|
+| 2.6 | **Palette strategy** | **C — Split by page type** | Colours **sampled directly from the logo file**, not eyeballed: royal blue `#014AF0` → cyan `#03ADC1` → lime green `#84F660` gradient, navy `#010717`. Home / About / Products render dark (navy background, matches the logo lockup and Shyamalan's portfolio). Services / Portfolio / Team index / Contact render light (white/near-white background, navy headlines). Founder portfolio pages keep their own independent palette per decision 1.17, untouched. |
+| — | Full token values | See `src/styles/global.css` once written | Dark tokens and light tokens are both first-class — this is a **per-page brand choice**, not a `prefers-color-scheme` toggle. The visitor's OS theme preference is irrelevant here; each page's background is fixed by design. |
+
+### Animation, 3D and the JS-budget policy
+
+Founder-initiated, mid-session, outside CLAUDE.md's original interview checklist — treated as its
+own decision batch because it directly amends existing hard requirements.
+
+| # | Decision | Choice | Notes |
+|---|---|---|---|
+| 2.7 | **Overall direction** | **Rich, animated, uses 3D** — touch feedback, transitions, scroll choreography, and 3D visuals, applied to every page, each service area given a visually distinct treatment | Founder's stated reason: the site is also a **client-pitch tool**, not just an information site — first-impression polish matters as much as raw load time now. |
+| 2.8 | ⚠️ **Amends CLAUDE.md's performance section** | **Two-tier delivery.** Full richness (3D scenes, GSAP-choreographed scroll/hover/touch) gated behind a capability check (`prefers-reduced-motion: no-preference` AND `pointer: fine` AND a minimum viewport width). Everything below that gate gets a CSS-only tier: transitions, `animation-timeline` reveals, hover/press states, zero extra JS. | The **old rule** — "keep total JS under ~50KB; site must work with JS disabled except form enhancement," Lighthouse Performance ≥ 90 on mid-range Android/4G — **no longer holds site-wide**. It still holds for the CSS-only lite tier, which is what phones and reduced-motion visitors actually get. The founder portfolio template's own 0 KB JS build (decision 1.16) is untouched — it predates and is independent of this decision. |
+| 2.9 | **3D asset source** | **No real 3D files exist.** Generic, procedurally-built engineering visuals (PCB-trace structures, node clusters, gear/chip forms) — not a literal render of the IC Tester, which is still mid-development. Revisit once real product photography/3D scans exist. | Avoids sourcing external 3D assets of uncertain licence. Everything is generated in code. |
+| 2.10 | **Tech stack** | **Three.js** (procedural geometry, no loaded GLB/GLTF files) for 3D, **GSAP** (including ScrollTrigger) for scroll/hover/touch choreography. **No React, no `@astrojs/react`.** | Founder delegated this choice ("do which is best, reliable, deployment-friendly, free"). Both are plain client-side JS/WebGL — Astro supports them via a normal `<script type="module">` in a `.astro` file, no UI framework needed, so CLAUDE.md's "no React unless asked" line is honoured by construction, not by exception. **Licensing check, done 2026-08-20:** Three.js is MIT. GSAP (including ScrollTrigger and every previously-paid "Club GreenSock" plugin) became 100% free for all use, including commercial, after Webflow's 2025 acquisition of GreenSock — no key, no attribution requirement, no budget impact. `<model-viewer>` was considered and set aside for now (best fit is real GLB/GLTF product scans, which decision 2.9 says don't exist yet); worth reconsidering once the IC Tester has real photography/3D capture. |
+
+### Deferred / still open
+
+- Animation level was originally meant to be a simple none/subtle/showcase pick (CLAUDE.md §7) — superseded by decision 2.7's much more specific direction.
+- Per-service visual motif assignments (which of the 8 services gets which 3D/motion treatment) are a build-time judgment call, not individually interviewed — founder to review once Home ships and correct anything that reads wrong for that service.
+- Typography (2.5) is provisional, not confirmed — see note above.
