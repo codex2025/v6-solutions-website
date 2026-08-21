@@ -11,8 +11,8 @@
  * Canonical URLs, sitemap and Open Graph tags all read from this one constant,
  * so switching to the real domain is a single-line change.
  */
-export const SITE_URL = 'https://v6solutions.pages.dev';
-// export const SITE_URL = 'https://v6solutions.in'; // ← switch to this once DNS resolves
+export const SITE_URL = 'https://v6solutions.in';
+// export const SITE_URL = 'https://v6solutions.pages.dev'; // ← old dev URL, pre-custom-domain
 
 /** Decision 1.9 — plain brand name for body copy and page titles. */
 export const BRAND = 'V6 Solutions';
