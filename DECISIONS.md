@@ -336,3 +336,38 @@ instructions) needs to actually match what a Workers-with-assets project expects
 still 404s on static files, the next thing to check is whether Cloudflare's build system is running
 `npm run build` at all before `wrangler deploy` picks up `dist/` — worth looking at the deployment's
 build log in the Cloudflare dashboard directly, which isn't visible from here.
+
+---
+
+## Phase 4.2 — Custom domain live
+
+**Date:** 2026-08-21
+**Trigger:** Founder bought `v6solutions.in` (decision 1.4, previously pending) and pointed its
+nameservers at Cloudflare from GoDaddy.
+
+### What happened
+
+- Nameserver change verified propagated (both local resolver and 8.8.8.8 returned Cloudflare's
+  `janet`/`noah.ns.cloudflare.com`) almost immediately — no real propagation wait needed this time.
+- Adding `v6solutions.in` as a Custom Domain on the `v6-solutions-website` Workers project initially
+  failed: *"Hostname already has externally managed DNS records"*. Cause: when the zone was added to
+  Cloudflare, it auto-imported the domain's pre-existing DNS records, which still pointed at
+  GoDaddy's **Airo** website builder (two proxied `A` records, `13.248.243.5` and `76.223.105.230`) —
+  so `v6solutions.in` was resolving through Cloudflare's network but serving GoDaddy's placeholder
+  site the whole time (confirmed via response headers: `dps_site_id`, `X-SiteId`, a CSP allowing
+  `godaddy.com` to frame the page). Fixed by deleting those two `A` records in the zone's DNS →
+  Records tab, then re-adding the custom domain, which succeeded.
+- Verified live: `curl -sI https://v6solutions.in` now returns `cloudflare` server headers with none
+  of the GoDaddy-specific ones, and the page title is "V6 Solutions" (this project's, not Airo's).
+- Flipped `SITE_URL` in `src/config/site.ts` from the `.pages.dev` dev URL to `https://v6solutions.in`
+  per decision 4's original plan (single-line change once DNS resolved) — committed and pushed
+  (`5b270de`), which triggers the existing git-connected auto-deploy.
+
+### Still open
+
+- `www.v6solutions.in` was left as-is (CNAME → `v6solutions.in`, unproxied conflict not hit) — not
+  added as its own Custom Domain on the Workers project. Founder hasn't indicated whether `www`
+  should also resolve; worth confirming before assuming it needs the same treatment.
+- `CONTACT_EMAIL` in `site.ts` is still the `PLACEHOLDER@v6solutions.in` value (decision 1.13) — the
+  domain can now receive mail if the founder sets up an inbox for it, which would let the real
+  address replace the placeholder and unhide the contact link.
